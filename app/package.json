@@ -31,5 +31,9 @@
 		"typescript": "^6.0.3",
 		"typescript-eslint": "^8.60.1",
 		"vite": "^8.0.16"
+	},
+	"dependencies": {
+		"@iconify-svelte/material-symbols": "^1.0.48",
+		"material-icons": "^1.13.14"
 	}
 }

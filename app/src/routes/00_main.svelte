@@ -1,6 +1,7 @@
 <script lang="ts">
     import { resolve } from '$app/paths';
     import Selection from "./01_selection.svelte";
+
     import SunnyIcon from '@iconify-svelte/material-symbols/sunny';
     import NightIcon from '@iconify-svelte/material-symbols/mode-night';
 
@@ -27,10 +28,10 @@
     <button class="nav-item nav-auto nav-end ots-button" onclick={() => {switchMode(mode)}}>
         {#if mode === "dark"}
             <!-- <span class="material-icons ots-icon">mode_night</span>  -->
-             <NightIcon height="1em" color="currentcolor"/>
+             <NightIcon height="1rem" color="currentcolor"/>
         {:else if  mode === "light"}
             <!-- <span class="material-icons ots-icon">wb_sunny</span>  -->
-             <SunnyIcon height="1em" color="currentcolor"/>
+             <SunnyIcon height="1rem" color="currentcolor"/>
         {/if}
         
     </button>
@@ -57,6 +58,7 @@
         width: 100%;
         align-items: center;
         color-scheme: dark;
+        font-family: Open-Sans,sans-serif;
     }
     .navbar::after{
         content:"";
@@ -84,19 +86,21 @@
 
     .content-wrapper{
         background-color: light-dark(var(--light), var(--dark));
+        color: light-dark(var(--light-text), var(--dark-text));
         width: 100%;
         min-height: 100vh;
         padding-top: 5rem;
         color-scheme: dark;
+        font-family: Open-Sans,sans-serif;
     }
     .content{
         width: 1500px;
         margin: 0 auto 0 auto;
-        color: light-dark(var(--light-text), var(--dark-text));
     }
 
     :global(.ots-button){
-        background-color: light-dark(var(--light), var(--dark));
+        /* background-color: light-dark(var(--light), var(--dark)); */
+        background-color: rgba(255,255,255,0.0);
         border-radius: 0.3rem;
         border-style: solid;
         border-width: 1px 2px 2px 1px;
@@ -112,6 +116,10 @@
 
     :global(.ots-button:active){
         border-width: 2px 1px 1px 2px;
+    }
+
+    :global(.ots-button:hover){
+        border-color: light-dark(var(--light-hover), var(--dark-hover));
     }
 
     :global(.ots-icon){

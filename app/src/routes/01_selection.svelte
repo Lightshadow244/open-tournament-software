@@ -1,68 +1,46 @@
-<script>
+<script lang="ts">
+    import type { Tournaments } from '$lib/types/tournament';
+
     import ChessIcon from '@iconify-svelte/material-symbols/chess';
     import SupervisorAccountIcon from '@iconify-svelte/material-symbols/supervisor-account';
     import MyLocationIcon from '@iconify-svelte/material-symbols/my-location';
     import CalendarTodayIcon from '@iconify-svelte/material-symbols/calendar-today';
     import Add2Icon from '@iconify-svelte/material-symbols/add-2';
+
+    interface Props {
+		tournaments: Tournaments;
+        createNewTournament(): void;
+        selectTournament(id:string): void;
+	}
+
+	let { tournaments, createNewTournament, selectTournament }: Props = $props();
+
 </script>
 
 <div class="tournament-wrapper">
-    <div class="tournament add">
+    <button class="tournament add" onclick={() => createNewTournament()}>
         <Add2Icon height="1.5rem"/>
-    </div>
-    <div class="tournament">
-        <h3 class="title">Tournament-Title</h3>
-        <div class="attributes-wrapper">
-            <div class="attribute">
-                <ChessIcon height="1rem" color="currentcolor"/> Tournament-Modus
+    </button>
+    {#each Object.entries(tournaments) as [id, tournament] (id)}
+        <button class="tournament" onclick={() => selectTournament(id)}>
+            <h3 class="title">{tournament.title}</h3>
+            <div class="attributes-wrapper">
+                <div class="attribute">
+                    <ChessIcon height="1rem" color="currentcolor"/> {tournament.mode}
+                </div>
+                <div class="attribute">
+                    <SupervisorAccountIcon height="1rem" color="currentcolor"/> {tournament.participantCount}
+                </div>
+                <div class="attribute">
+                    <CalendarTodayIcon height="1rem" color="currentcolor"/> {tournament.date}
+                </div>
+                <div class="attribute">
+                    <MyLocationIcon height="1rem" color="currentcolor"/> {tournament.location}
+                </div>
             </div>
-            <div class="attribute">
-                <SupervisorAccountIcon height="1rem" color="currentcolor"/> 5
-            </div>
-            <div class="attribute">
-                <CalendarTodayIcon height="1rem" color="currentcolor"/> 02/08/2026
-            </div>
-            <div class="attribute">
-                <MyLocationIcon height="1rem" color="currentcolor"/> Magdeburg
-            </div>
-        </div>
-    </div>
-
-    <div class="tournament">
-        <h3 class="title">Tournament-Title</h3>
-        <div class="attributes-wrapper">
-            <div class="attribute">
-                <ChessIcon height="1rem" color="currentcolor"/> Tournament-Modus
-            </div>
-            <div class="attribute">
-                <SupervisorAccountIcon height="1rem" color="currentcolor"/> 5
-            </div>
-            <div class="attribute">
-                <CalendarTodayIcon height="1rem" color="currentcolor"/> 02/08/2026
-            </div>
-            <div class="attribute">
-                <MyLocationIcon height="1rem" color="currentcolor"/> Magdeburg
-            </div>
-        </div>
-    </div>
-
-    <div class="tournament">
-        <h3 class="title">Tournament-Title</h3>
-        <div class="attributes-wrapper">
-            <div class="attribute">
-                <ChessIcon height="1rem" color="currentcolor"/> Tournament-Modus
-            </div>
-            <div class="attribute">
-                <SupervisorAccountIcon height="1rem" color="currentcolor"/> 5
-            </div>
-            <div class="attribute">
-                <CalendarTodayIcon height="1rem" color="currentcolor"/> 02/08/2026
-            </div>
-            <div class="attribute">
-                <MyLocationIcon height="1rem" color="currentcolor"/> Magdeburg
-            </div>
-        </div>
-    </div>
+        </button>
+    {/each}
+    
 </div>
 
 
@@ -80,6 +58,8 @@
     padding: 10px;
     display:grid;
     gap: 0.25rem;
+    background-color: rgba(255,255,255,0.0);
+    text-align: left;
 }
 
 .tournament:active{
@@ -102,16 +82,16 @@
 
 .attributes-wrapper{
     display: flex;
-    /* gap:3rem; */
     justify-content: center;
     align-items: center;
 }
 .attribute{
     display:flex;
+    flex: 1 1 0px;
     align-items: center;
-    justify-content: center;
     gap:0.5rem;
     margin: 0 auto 0 auto
     
 }
+
 </style>

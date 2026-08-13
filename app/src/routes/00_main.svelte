@@ -1,15 +1,75 @@
 <script lang="ts">
     import { resolve } from '$app/paths';
-    import Selection from "./01_selection.svelte";
+    import type { Tournaments, Tournament } from '$lib/types/tournament';
+
+    import SelectionView from "./01_selection.svelte";
+    import TournamentView from './02_tournament.svelte';
 
     import SunnyIcon from '@iconify-svelte/material-symbols/sunny';
     import NightIcon from '@iconify-svelte/material-symbols/mode-night';
 
+    let tmpTournaments = {};
 
-    let page: number = $state(0);
-    let mode = $state("dark")
+    if (typeof localStorage !== 'undefined'){
+        if (localStorage.getItem("tournaments") != null) {
+            tmpTournaments =  JSON.parse(localStorage.getItem("tournaments") as string);
+        }  
+    }
+
+    let tts:Tournaments = $state(tmpTournaments)
+
+    let tournamentId: string = $state("");
+    let mode = $state("dark");
     let content_wrapper: HTMLDivElement;
     let navbar: HTMLElement;
+
+    function updateTournament(tt:Tournament){
+        tts[tt.id] = tt
+        updateLocalStorage();
+    }
+
+    function createNewTournament(){
+        const date = new Date();
+        const options: Intl.DateTimeFormatOptions = {
+            day: "numeric",
+            month: "numeric",
+            year: "numeric",
+            hour: "numeric",
+            minute: "numeric"
+            
+            };
+        let dateString = date.toLocaleDateString("de-DE", options);
+        let new_tt: Tournament = {
+            id                   : crypto.randomUUID(),
+            title                : "New Tournament",
+            mode                 : "Single Elimination",
+            participantCount     : 0,
+            date                 : dateString,
+            modified             : dateString,
+            location             : ""
+        }
+
+        tts[new_tt.id] = new_tt;
+        tournamentId = new_tt.id;
+        updateLocalStorage();
+    }
+
+    function deleteTournament(id:string){
+        delete tts[id];
+        tournamentId = "";
+        updateLocalStorage();
+    }
+
+    function updateLocalStorage(){
+        if (typeof localStorage !== 'undefined'){
+            localStorage.setItem("tournaments", JSON.stringify($state.snapshot(tts)))
+            
+        }
+    }
+
+    function selectTournament(id:string){
+        tournamentId = id;
+    }
 
     function switchMode(tmpMode:string) {
         mode = tmpMode === "dark" ? "light" : "dark";
@@ -22,7 +82,13 @@
 <nav bind:this={navbar} class="navbar">
 
     <a class="nav-item nav-start home-link" href={resolve("/")}>Open Tournament Software</a>
-    <span>Dies ist ein Text</span>
+    
+    <button class="nav-item">Tournaments</button>
+    {#if tournamentId != ""}
+        <button class="nav-item">Settings</button>
+        <button class="nav-item">Matches</button>
+        <button class="nav-item">Overview</button>
+    {/if}
     
 
     <button class="nav-item nav-auto nav-end ots-button" onclick={() => {switchMode(mode)}}>
@@ -39,8 +105,10 @@
 
 <div bind:this={content_wrapper} class="content-wrapper">
     <div class="content">
-        {#if page == 0}
-            <Selection />
+        {#if tournamentId == ""}
+            <SelectionView tournaments={$state.snapshot(tts)} createNewTournament={createNewTournament} selectTournament={selectTournament}/>
+        {:else}
+            <TournamentView tournament={$state.snapshot(tts[tournamentId])} deleteTournament={deleteTournament} updateTournament={updateTournament}/>
         {/if}
     </div>
     
@@ -59,6 +127,7 @@
         align-items: center;
         color-scheme: dark;
         font-family: Open-Sans,sans-serif;
+        
     }
     .navbar::after{
         content:"";
@@ -70,7 +139,7 @@
         position: absolute;
     }
     .home-link{
-        
+        margin-right: 0.25rem;
     }
     .nav-item{
     }

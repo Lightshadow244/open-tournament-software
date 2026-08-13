@@ -2,7 +2,7 @@
 Hold tournaments of any kinds.
 
 ## Data storage
-All data is stored in your cookies.
+All data is stored in your browser local storage.
 
 ## Features
 - Create multiple tournaments:

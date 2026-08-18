@@ -2,19 +2,14 @@
     import { resolve } from '$app/paths';
     import type { Tournaments, Tournament } from '$lib/types/tournament';
 
+    import { updateTournaments, loadTournaments} from '$lib/db';
     import SelectionView from "./01_selection.svelte";
     import TournamentView from './02_tournament.svelte';
 
     import SunnyIcon from '@iconify-svelte/material-symbols/sunny';
     import NightIcon from '@iconify-svelte/material-symbols/mode-night';
 
-    let tmpTournaments = {};
-
-    if (typeof localStorage !== 'undefined'){
-        if (localStorage.getItem("tournaments") != null) {
-            tmpTournaments =  JSON.parse(localStorage.getItem("tournaments") as string);
-        }  
-    }
+    let tmpTournaments = loadTournaments();
 
     let tts:Tournaments = $state(tmpTournaments)
 
@@ -25,7 +20,7 @@
 
     function updateTournament(tt:Tournament){
         tts[tt.id] = tt
-        updateLocalStorage();
+        updateTournaments($state.snapshot(tts));
     }
 
     function createNewTournament(){
@@ -51,20 +46,14 @@
 
         tts[new_tt.id] = new_tt;
         tournamentId = new_tt.id;
-        updateLocalStorage();
+        console.log(tts)
+        updateTournaments($state.snapshot(tts));
     }
 
     function deleteTournament(id:string){
         delete tts[id];
         tournamentId = "";
-        updateLocalStorage();
-    }
-
-    function updateLocalStorage(){
-        if (typeof localStorage !== 'undefined'){
-            localStorage.setItem("tournaments", JSON.stringify($state.snapshot(tts)))
-            
-        }
+        updateTournaments($state.snapshot(tts));
     }
 
     function selectTournament(id:string){

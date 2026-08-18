@@ -68,6 +68,7 @@
 
 .tournament:hover{
     border-color: light-dark(var(--light-hover), var(--dark-hover));
+    cursor: pointer;
 }
 
 .add{

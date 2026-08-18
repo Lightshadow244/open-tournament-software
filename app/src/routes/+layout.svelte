@@ -24,7 +24,9 @@
 	--dark-secondary: #23272f;
 	--dark-highlight: #303541;
 	--dark-hover: #404757;
-	--dark-text: #cecece; 
+	--dark-text: #cecece;
+	
+	--scale-green: #26664c;
 
 	--background: light-dark(var(--light), var(--dark));
   }

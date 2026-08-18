@@ -4,7 +4,7 @@
 
     import { updateTournaments, loadTournaments} from '$lib/db';
     import SelectionView from "./01_selection.svelte";
-    import TournamentView from './02_tournament.svelte';
+    import GeneralView from './02_general.svelte';
 
     import SunnyIcon from '@iconify-svelte/material-symbols/sunny';
     import NightIcon from '@iconify-svelte/material-symbols/mode-night';
@@ -14,6 +14,7 @@
     let tts:Tournaments = $state(tmpTournaments)
 
     let tournamentId: string = $state("");
+    let view: number = $state(0);
     let mode = $state("dark");
     let content_wrapper: HTMLDivElement;
     let navbar: HTMLElement;
@@ -46,18 +47,23 @@
 
         tts[new_tt.id] = new_tt;
         tournamentId = new_tt.id;
-        console.log(tts)
+        view = 1;
+        
         updateTournaments($state.snapshot(tts));
     }
 
     function deleteTournament(id:string){
         delete tts[id];
         tournamentId = "";
+        view = 0;
+
+        
         updateTournaments($state.snapshot(tts));
     }
 
     function selectTournament(id:string){
         tournamentId = id;
+        view = 1;
     }
 
     function switchMode(tmpMode:string) {
@@ -72,12 +78,16 @@
 
     <a class="nav-item nav-start home-link" href={resolve("/")}>Open Tournament Software</a>
     
-    <button class="nav-item">Tournaments</button>
-    {#if tournamentId != ""}
-        <button class="nav-item">Settings</button>
-        <button class="nav-item">Matches</button>
-        <button class="nav-item">Overview</button>
-    {/if}
+    <div class="view-selection nav-item">
+        <button class="{view == 0 ? "active":""}" onclick={() => {view=0}}>Tournaments</button>
+        {#if tournamentId != ""}
+            <button class="{view == 1 ? "active":""}" onclick={() => {view=1}}>General</button>
+            <button class="{view == 2 ? "active":""}" onclick={() => {view=2}}>Matches</button>
+            <button class="{view == 3 ? "active":""}" onclick={() => {view=3}}>Overview</button>
+        {/if}
+
+    </div>
+    
     
 
     <button class="nav-item nav-auto nav-end ots-button" onclick={() => {switchMode(mode)}}>
@@ -94,10 +104,14 @@
 
 <div bind:this={content_wrapper} class="content-wrapper">
     <div class="content">
-        {#if tournamentId == ""}
+        {#if view == 0}
             <SelectionView tournaments={$state.snapshot(tts)} createNewTournament={createNewTournament} selectTournament={selectTournament}/>
-        {:else}
-            <TournamentView tournament={$state.snapshot(tts[tournamentId])} deleteTournament={deleteTournament} updateTournament={updateTournament}/>
+        {:else if view == 1}
+            <GeneralView tournament={$state.snapshot(tts[tournamentId])} deleteTournament={deleteTournament} updateTournament={updateTournament}/>
+        {:else if view == 2}
+            Matches
+        {:else if view == 3}
+            Overview
         {/if}
     </div>
     
@@ -116,6 +130,7 @@
         align-items: center;
         color-scheme: dark;
         font-family: Open-Sans,sans-serif;
+        gap: 0.25rem;
         
     }
     .navbar::after{
@@ -128,7 +143,6 @@
         position: absolute;
     }
     .home-link{
-        margin-right: 0.25rem;
     }
     .nav-item{
     }
@@ -140,6 +154,34 @@
     }
     .nav-auto{
         margin-left:auto;
+    }
+
+    .view-selection{
+        display: flex;
+        gap:0;
+        height:100%
+    }
+
+    .view-selection button{
+        background-color: rgba(255,255,255,0.0);
+        border-width: 0 0 1px 0;
+        border-color: rgba(255,255,255,0.0);
+        font-size: 1rem;
+    }
+
+    .view-selection button:hover{
+        border-color: rgba(255,255,255,1);
+        cursor: pointer;
+    }
+
+    .view-selection .active{
+        color: var(--scale-green);
+        border-color: var(--scale-green);
+        border-width: 0 0 2px 0;
+    }
+
+    .view-selection .active:hover{
+        border-color: var(--scale-green);
     }
 
     .content-wrapper{
@@ -178,6 +220,7 @@
 
     :global(.ots-button:hover){
         border-color: light-dark(var(--light-hover), var(--dark-hover));
+        cursor: pointer;
     }
 
     :global(.ots-icon){

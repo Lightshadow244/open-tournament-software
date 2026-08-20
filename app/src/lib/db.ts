@@ -12,10 +12,7 @@ export function loadTournaments(){
     if (typeof localStorage !== 'undefined'){
         if (localStorage.getItem("tournaments") != null) {
             tts =  JSON.parse(localStorage.getItem("tournaments") as string);
-            console.log("test2")
         }  
-    }else{
-        console.log("localstorage undefined")
     }
     return(tts)
 }

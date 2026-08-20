@@ -29,10 +29,10 @@
                     <ChessIcon height="1rem" color="currentcolor"/> {tournament.mode}
                 </div>
                 <div class="attribute">
-                    <SupervisorAccountIcon height="1rem" color="currentcolor"/> {tournament.participantCount}
+                    <SupervisorAccountIcon height="1rem" color="currentcolor"/> {tournament.participants.length}
                 </div>
                 <div class="attribute">
-                    <CalendarTodayIcon height="1rem" color="currentcolor"/> {tournament.date}
+                    <CalendarTodayIcon height="1rem" color="currentcolor"/> {tournament.date}, {tournament.time}
                 </div>
                 <div class="attribute">
                     <MyLocationIcon height="1rem" color="currentcolor"/> {tournament.location}

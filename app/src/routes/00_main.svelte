@@ -1,17 +1,18 @@
 <script lang="ts">
-    import { resolve } from '$app/paths';
     import type { Tournaments, Tournament } from '$lib/types/tournament';
-
+    
+    import { resolve } from '$app/paths';
     import { updateTournaments, loadTournaments} from '$lib/db';
     import SelectionView from "./01_selection.svelte";
     import GeneralView from './02_general.svelte';
+    import MatchesView from './03_matches.svelte';
 
     import SunnyIcon from '@iconify-svelte/material-symbols/sunny';
     import NightIcon from '@iconify-svelte/material-symbols/mode-night';
 
-    let tmpTournaments = loadTournaments();
+    // let tmpTournaments = ;
 
-    let tts:Tournaments = $state(tmpTournaments)
+    let tts:Tournaments = $state(loadTournaments())
 
     let tournamentId: string = $state("");
     let view: number = $state(0);
@@ -19,30 +20,34 @@
     let content_wrapper: HTMLDivElement;
     let navbar: HTMLElement;
 
-    function updateTournament(tt:Tournament){
+    function updateTournament(tt:Tournament, configuring=false, initializing=false, running=false){
+        if(configuring){
+            tt.status = "configuring"
+        }else if(initializing){
+            tt.status = "initializing"
+        }else if(running){
+            tt.status = "running"
+        }
+
         tts[tt.id] = tt
         updateTournaments($state.snapshot(tts));
     }
 
     function createNewTournament(){
         const date = new Date();
-        const options: Intl.DateTimeFormatOptions = {
-            day: "numeric",
-            month: "numeric",
-            year: "numeric",
-            hour: "numeric",
-            minute: "numeric"
-            
-            };
-        let dateString = date.toLocaleDateString("de-DE", options);
+        let dateString = date.toISOString();
         let new_tt: Tournament = {
             id                   : crypto.randomUUID(),
+            status               : "configuring",
             title                : "New Tournament",
             mode                 : "Single Elimination",
-            participantCount     : 0,
-            date                 : dateString,
+            date                 : dateString.split("T")[0],
+            time                 : dateString.split("T")[1].split("Z")[0].substring(0, 5),
             modified             : dateString,
-            location             : ""
+            location             : "",
+            participants         : [{name:"Player 1", icon: "empty"},{name:"Player 2", icon: "empty"},{name:"Player 3", icon: "empty"}],
+            matches              : null
+            
         }
 
         tts[new_tt.id] = new_tt;
@@ -64,6 +69,18 @@
     function selectTournament(id:string){
         tournamentId = id;
         view = 1;
+    }
+
+    function addPlayerToTournament(tt:Tournament){
+        tt.participants?.push({name:"Player " + (tt.participants.length + 1), icon: "empty"})
+        tts[tt.id] = tt
+    }
+
+    function removePlayerFromTournament(tt:Tournament, playerId:number){
+        if (tt.participants.length > 0) {
+            tt.participants.splice(playerId, 1);
+            tts[tt.id] = tt
+        }
     }
 
     function switchMode(tmpMode:string) {
@@ -107,9 +124,9 @@
         {#if view == 0}
             <SelectionView tournaments={$state.snapshot(tts)} createNewTournament={createNewTournament} selectTournament={selectTournament}/>
         {:else if view == 1}
-            <GeneralView tournament={$state.snapshot(tts[tournamentId])} deleteTournament={deleteTournament} updateTournament={updateTournament}/>
+            <GeneralView tournament={$state.snapshot(tts[tournamentId])} deleteTournament={deleteTournament} updateTournament={updateTournament} addPlayerToTournament={addPlayerToTournament} removePlayerFromTournament={removePlayerFromTournament}/>
         {:else if view == 2}
-            Matches
+            <MatchesView tournament={$state.snapshot(tts[tournamentId])}/>
         {:else if view == 3}
             Overview
         {/if}
@@ -192,6 +209,7 @@
         padding-top: 5rem;
         color-scheme: dark;
         font-family: Open-Sans,sans-serif;
+        font-size: 1rem;
     }
     .content{
         width: 1500px;
@@ -212,6 +230,19 @@
         color: light-dark(var(--light-text), var(--dark-text));
         
         
+    }
+
+    :global(.ots-button-success){
+        background-color: var(--scale-green);
+    }
+
+    :global(.ots-button-danger){
+        background-color: var(--wine-red);
+    }
+
+    :global(.ots-button-warning){
+        background-color: var(--sulfur-yellow);
+        color: var(--light-text)
     }
 
     :global(.ots-button:active){

@@ -45,9 +45,9 @@
             time                 : dateString.split("T")[1].split("Z")[0].substring(0, 5),
             modified             : dateString,
             location             : "",
-            participants         : [{name:"Player 1", icon: "empty"},{name:"Player 2", icon: "empty"},{name:"Player 3", icon: "empty"}],
-            matches              : null
-            
+            players              : [{name:"Player 1", icon: "empty"},{name:"Player 2", icon: "empty"},{name:"Player 3", icon: "empty"}],
+            matches              : null,
+            round                : 0
         }
 
         tts[new_tt.id] = new_tt;
@@ -72,13 +72,13 @@
     }
 
     function addPlayerToTournament(tt:Tournament){
-        tt.participants?.push({name:"Player " + (tt.participants.length + 1), icon: "empty"})
+        tt.players?.push({name:"Player " + (tt.players.length + 1), icon: "empty"})
         tts[tt.id] = tt
     }
 
     function removePlayerFromTournament(tt:Tournament, playerId:number){
-        if (tt.participants.length > 0) {
-            tt.participants.splice(playerId, 1);
+        if (tt.players.length > 0) {
+            tt.players.splice(playerId, 1);
             tts[tt.id] = tt
         }
     }
@@ -126,7 +126,7 @@
         {:else if view == 1}
             <GeneralView tournament={$state.snapshot(tts[tournamentId])} deleteTournament={deleteTournament} updateTournament={updateTournament} addPlayerToTournament={addPlayerToTournament} removePlayerFromTournament={removePlayerFromTournament}/>
         {:else if view == 2}
-            <MatchesView tournament={$state.snapshot(tts[tournamentId])}/>
+            <MatchesView tournament={$state.snapshot(tts[tournamentId])} updateTournament={updateTournament}/>
         {:else if view == 3}
             Overview
         {/if}

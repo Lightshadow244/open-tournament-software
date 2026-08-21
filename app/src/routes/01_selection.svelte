@@ -19,7 +19,7 @@
 
 <div class="tournament-wrapper">
     <button class="tournament add" onclick={() => createNewTournament()}>
-        <Add2Icon height="1.5rem"/>
+        <Add2Icon height="1.5rem" color="currentcolor"/>
     </button>
     {#each Object.entries(tournaments) as [id, tournament] (id)}
         <button class="tournament" onclick={() => selectTournament(id)}>
@@ -29,7 +29,7 @@
                     <ChessIcon height="1rem" color="currentcolor"/> {tournament.mode}
                 </div>
                 <div class="attribute">
-                    <SupervisorAccountIcon height="1rem" color="currentcolor"/> {tournament.participants.length}
+                    <SupervisorAccountIcon height="1rem" color="currentcolor"/> {tournament.players.length}
                 </div>
                 <div class="attribute">
                     <CalendarTodayIcon height="1rem" color="currentcolor"/> {tournament.date}, {tournament.time}
@@ -75,10 +75,12 @@
     display:flex;
     justify-content: center;
     align-items: center;
+    color: light-dark(var(--light-text), var(--dark-text));
 }
 
 .title{
     margin:0;
+    color: light-dark(var(--light-text), var(--dark-text));
 }
 
 .attributes-wrapper{
@@ -91,7 +93,8 @@
     flex: 1 1 0px;
     align-items: center;
     gap:0.5rem;
-    margin: 0 auto 0 auto
+    margin: 0 auto 0 auto;
+    color: light-dark(var(--light-text), var(--dark-text));
     
 }
 

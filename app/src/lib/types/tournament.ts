@@ -7,8 +7,9 @@ export type Tournament = {
     time: string
     modified: string
     location: string
-    participants: Array<Player>
-    matches: Array<Match> | null
+    players: Array<Player>
+    matches: Array<Array<Match>> | null
+    round: number
 }
 
 export type Tournaments = {

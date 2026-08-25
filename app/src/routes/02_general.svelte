@@ -20,7 +20,7 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
 <form>
     <label for="title">Title</label>
     <!-- <input type="text" id="title" name="title" bind:value={tournament.title} onfocusout={() => updateTournament(tournament)}> -->
-    <input type="text" id="title" name="title" bind:value={tournament.title} disabled={tournament.status === "configuring" ? false : true}>
+    <input class="{tournament.status === "configuring" ? "" : "mode-disabled"}" type="text" id="title" name="title" bind:value={tournament.title} disabled={tournament.status === "configuring" ? false : true}>
 
     <div class="input-wrapper">
         <div class="input-element">
@@ -86,7 +86,7 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
             </tr>
         </thead>
         <tbody>
-        {#each tournament.participants as p, i (i) }
+        {#each tournament.players as p, i (i) }
             <tr>
                 <td><input type="text" bind:value={p.name} disabled={tournament.status === "configuring" ? false : true}></td>
                 <td><input type="text" bind:value={p.icon} disabled={tournament.status === "configuring" ? false : true}></td>

@@ -32,7 +32,7 @@ export function calculateSingleEliminationMatches(players:Array<Player>):Array<A
                 player1Points: 0,
                 player2: null,
                 player2Points: 0,
-                winner: null,
+                winner: 0,
                 roundId: roundId,
                 nextRoundId: roundId + 1,
                 matchId: matchId,

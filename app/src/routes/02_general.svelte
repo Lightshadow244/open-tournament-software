@@ -1,18 +1,48 @@
 <script lang="ts">
+import type { Tournament } from '$lib/types/tournament';
+
 import RemoveRoundedIcon from '@iconify-svelte/material-symbols/remove-rounded';
 import Add2Icon from '@iconify-svelte/material-symbols/add-2';
 
 
-import type { Tournament } from '$lib/types/tournament';
 interface Props {
 		tournament: Tournament;
         deleteTournament(id: string): void;
         updateTournament(tt: Tournament, configuring?:boolean, initializing?:boolean, running?:boolean): void;
-        addPlayerToTournament(tt:Tournament): void;
-        removePlayerFromTournament(tt:Tournament, participantId:number): void;
+        triggerToast(msg:string, level:string): void;
 	}
 
-let { tournament, deleteTournament, updateTournament, addPlayerToTournament, removePlayerFromTournament }: Props = $props();
+let { tournament, deleteTournament, updateTournament, triggerToast }: Props = $props();
+
+function addPlayerToTournament(){
+    tournament.players?.push({id: tournament.players.length,name:"Player " + (tournament.players.length + 1), icon: "empty"})
+    updateTournament(tournament);
+
+    tournament.players.forEach((player, index) => {
+        player.id=index;
+    });
+}
+
+function removePlayerFromTournament(playerId:number){
+    if (tournament.players.length > 0) {
+        tournament.players.splice(playerId, 1);
+        updateTournament(tournament);
+    }
+
+    tournament.players.forEach((player, index) => {
+        player.id=index;
+    });
+}
+
+function saveAndStartTournament(){
+    if (tournament.mode === "Single Elimination") {
+        if (tournament.players.length % 4 == 0) {
+           updateTournament(tournament, false, true); 
+        }else{
+            triggerToast("Single Elimination needs playercount divisible by 4", "error")
+        }
+    }
+}
 
 </script>
 
@@ -25,15 +55,15 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
     <div class="input-wrapper">
         <div class="input-element">
             <label for="date">Date</label>
-            <input type="date" id="date" name="date" bind:value={tournament.date} disabled={tournament.status === "configuring" ? false : true}>
+            <input class="{tournament.status === "configuring" ? "" : "mode-disabled"}" type="date" id="date" name="date" bind:value={tournament.date} disabled={tournament.status === "configuring" ? false : true}>
         </div>
         <div class="input-element">
             <label for="time">Time</label>
-            <input type="time" id="time" name="time" bind:value={tournament.time} disabled={tournament.status === "configuring" ? false : true}>
+            <input class="{tournament.status === "configuring" ? "" : "mode-disabled"}" type="time" id="time" name="time" bind:value={tournament.time} disabled={tournament.status === "configuring" ? false : true}>
         </div>
         <div class="input-element">
             <label for="location">Location</label>
-            <input type="text" id="location" name="location" bind:value={tournament.location} disabled={tournament.status === "configuring" ? false : true}>
+            <input class="{tournament.status === "configuring" ? "" : "mode-disabled"}" type="text" id="location" name="location" bind:value={tournament.location} disabled={tournament.status === "configuring" ? false : true}>
         </div>
     </div>
     <div class="divider"></div>
@@ -71,7 +101,7 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
     <legend>Participants</legend>
 
     {#if tournament.status === "configuring"}    
-        <button class="ots-button button-add-participant" onclick={() => addPlayerToTournament(tournament)}>
+        <button class="ots-button button-add-participant" onclick={() => addPlayerToTournament()}>
             <Add2Icon height="1rem"/>
         </button>
     {/if}
@@ -79,6 +109,7 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
     <table class="participants-table">
         <thead>
             <tr>
+                <th>#</th>
                 <th>Name</th>
                 <!-- <th>Strength</th> -->
                 <th>Icon</th>
@@ -88,12 +119,13 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
         <tbody>
         {#each tournament.players as p, i (i) }
             <tr>
-                <td><input type="text" bind:value={p.name} disabled={tournament.status === "configuring" ? false : true}></td>
-                <td><input type="text" bind:value={p.icon} disabled={tournament.status === "configuring" ? false : true}></td>
+                <td><div class="mode-disabled">{p.id + 1}</div></td>
+                <td><input class="{tournament.status === "configuring" ? "" : "mode-disabled"}" type="text" bind:value={p.name} disabled={tournament.status === "configuring" ? false : true}></td>
+                <td><input class="{tournament.status === "configuring" ? "" : "mode-disabled"}" type="text" bind:value={p.icon} disabled={tournament.status === "configuring" ? false : true}></td>
                 
                 <td class="participants-table-delete">
                     {#if tournament.status === "configuring"}
-                        <button class="ots-button ots-button-danger" onclick={() => removePlayerFromTournament(tournament, i)}>
+                        <button class="ots-button ots-button-danger" onclick={() => removePlayerFromTournament(i)}>
                             <RemoveRoundedIcon height="1rem" color="currentcolor"/>
                     
                         </button>
@@ -102,47 +134,30 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
                 
             </tr>
         {/each}
-            <!-- <tr>
-                <td>Richi</td>
-                <td>3</td>
-                <td>circle</td>
-            </tr>
-            <tr>
-                <td>Nici</td>
-                <td>2</td>
-                <td>triangle</td>
-            </tr>
-            <tr>
-                <td>Johnny</td>
-                <td>4</td>
-                <td>quadrate</td>
-            </tr>
-            <tr>
-                <td>Johnny</td>
-                <td>4</td>
-                <td>quadrate</td>
-            </tr> -->
         </tbody>
     </table>
     <div class="participants-wrapper"></div>
 </form>
-<div class="save-delete-wrapper">
-    {#if tournament.status === "configuring"}
-        <button class="ots-button ots-button-success" onclick={() => updateTournament(tournament, false, true)}>Save & Start</button>
+{#if tournament.status === "configuring"}
+    <div class="save-delete-wrapper">
+        <button class="ots-button ots-button-success" onclick={() => saveAndStartTournament()}>Save & Start</button>
         <button class="ots-button ots-button-danger" onclick={() => deleteTournament(tournament.id)}>Delete</button>
-    {:else if tournament.status !== "configuring"}
-        <button class="ots-button ots-button-warning" onclick={() => updateTournament(tournament, true)}>Configure</button>
-        
-        <div class="configure-info">
-            <div class="configure-info-content">
-                <div class="configure-info-text">
-                    Configuring the tournament again, will reset all match progress!
+    </div>
+{:else if tournament.status !== "configuring"}
+    <div class="configure-wrapper">
+        <div>
+            <button class="ots-button ots-button-warning" onclick={() => updateTournament(tournament, true)}>Configure</button>
+            
+            <div class="configure-info">
+                <div class="configure-info-content">
+                    <div class="configure-info-text">
+                        Configuring the tournament again, will reset all match progress!
+                    </div>
                 </div>
             </div>
         </div>
-        
-    {/if}
-</div>
+    </div>
+{/if}
 
 
 <style>
@@ -187,7 +202,7 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
         height: 25px;
         border-width: 2px;
         border-color: light-dark(var(--light-highlight), var(--dark-highlight));
-        transition: border-color 0.3s ease, color 0.3s ease;
+        transition: all 0.3s ease;
         border-style: solid;
         border-radius: 0.3rem;
         background-color: rgba(255,255,255,0.0);
@@ -201,10 +216,7 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
         outline: auto;
     }
 
-    .mode-disabled{
-        color: light-dark(var(--light-disabled), var(--dark-disabled));
-        transition: color 0.3s ease, color 0.3s ease;
-    }
+    
 
     .button-add-participant{
         width: 2rem;
@@ -216,13 +228,19 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
         border-style: solid;
         border-width: 2px;
         border-color: light-dark(var(--light-highlight), var(--dark-highlight));
-        transition: border-color 0.3s ease, color 0.3s ease;
         padding:0;
         height:25px;
         font-size: 1rem;
         color: light-dark(var(--light-text), var(--dark-text));
-        transition: color 0.3s ease, color 0.3s ease;
+        transition: all 0.3s ease;
         
+    }
+    input[type="text"].mode-disabled,input[type="date"].mode-disabled,input[type="time"].mode-disabled{
+        color: light-dark(var(--light-disabled), var(--dark-disabled));
+    }
+
+    .mode-disabled{
+        color: light-dark(var(--light-disabled), var(--dark-disabled));
     }
 
     .divider{
@@ -231,7 +249,7 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
         border-style:solid;
         border-width: 0 0 1px 0;
         border-color: light-dark(var(--light-highlight), var(--dark-highlight));
-        transition: border-color 0.3s ease, color 0.3s ease;
+        transition: border-color 0.3s ease;
         margin-top: 10px;
         margin-bottom: 10px;
     }
@@ -261,7 +279,7 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
 
     .participants-table thead tr *{
         background-color: light-dark(var(--light-hover), var(--dark-hover));
-        transition: background-color 0.3s ease, color 0.3s ease;
+        transition: background-color 0.3s ease;
         text-align: left;
     }
     .participants-table th,
@@ -272,19 +290,13 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
 
     .participants-table tbody tr {
         border-bottom: 1px solid light-dark(var(--light-hover), var(--dark-hover));
-        transition: border-color 0.3s ease, color 0.3s ease;
+        transition: border-color 0.3s ease;
     }
 
     .participants-table tbody tr:nth-of-type(even) td{
         background-color: light-dark(var(--light-highlight), var(--dark-highlight));
-        transition: background-color 0.3s ease, color 0.3s ease;
+        transition: background-color 0.3s ease;
     }
-
-    /* .participants-table tbody tr td{
-        border-style: solid;
-        border-width: 1px 0 0 0;
-        border-color: light-dark(var(--light-highlight), var(--dark-highlight));
-    } */
 
     .participants-table input {
         border:0;
@@ -294,6 +306,7 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
 
     .participants-table tbody tr:last-of-type {
         border-bottom: 2px solid light-dark(var(--light-hover), var(--dark-hover));
+        transition: border-color 0.3s ease;
     }
 
     .participants-table-delete{
@@ -304,18 +317,16 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
         margin-left: auto;
     }
 
-    .save-delete-wrapper{
+    .configure-wrapper{
         display: flex;
-        gap: 5px;
+    }
+
+    .configure-wrapper div:first-child{
         position: relative;
     }
 
-    /* .save-delete-wrapper button:first-child{
-        flex-grow: 4; 
-    } */
-    .save-delete-wrapper button:last-child{
-        /* flex-grow: 1; */
-        margin-left: auto;
+    .configure-wrapper div:first-child:hover .configure-info{
+        display:block;
     }
 
     .configure-info{
@@ -326,6 +337,7 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
         border-radius: 0.3rem;
         padding:5px;
         display: none;
+        width: 29rem;
         
     }
 
@@ -350,7 +362,13 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
         position: relative;
     }
 
-    .save-delete-wrapper:hover .configure-info{
-        display:block;
+    .save-delete-wrapper{
+        display: flex;
     }
+
+    .save-delete-wrapper button:last-child{
+        /* flex-grow: 1; */
+        margin-left: auto;
+    }
+    
 </style>

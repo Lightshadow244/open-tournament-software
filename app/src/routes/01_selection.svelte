@@ -55,7 +55,7 @@
     border-style: solid;
     border-width: 1px 2px 2px 1px;
     border-color: light-dark(var(--light-highlight), var(--dark-highlight));
-    transition: border-color 0.3s ease, color 0.3s ease;
+    transition: border-color 0.3s ease;
     padding: 10px;
     display:grid;
     gap: 0.25rem;
@@ -69,7 +69,7 @@
 
 .tournament:hover{
     border-color: light-dark(var(--light-hover), var(--dark-hover));
-    transition: border-color 0.3s ease, color 0.3s ease;
+    transition: border-color 0.3s ease;
     cursor: pointer;
 }
 
@@ -77,12 +77,14 @@
     display:flex;
     justify-content: center;
     align-items: center;
-    color: light-dark(var(--light-text), var(--dark-text));
+    color: light-dark(var(--light-text), var(--dark-text)); 
+    
 }
 
 .title{
     margin:0;
     color: light-dark(var(--light-text), var(--dark-text));
+    transition: color 0.3s ease;
 }
 
 .attributes-wrapper{
@@ -97,6 +99,7 @@
     gap:0.5rem;
     margin: 0 auto 0 auto;
     color: light-dark(var(--light-text), var(--dark-text));
+    transition: color 0.3s ease;
     
 }
 

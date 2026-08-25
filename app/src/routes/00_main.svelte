@@ -6,6 +6,7 @@
     import SelectionView from "./01_selection.svelte";
     import GeneralView from './02_general.svelte';
     import MatchesView from './03_matches.svelte';
+    import Toast from "./Toast.svelte"
 
     import SunnyIcon from '@iconify-svelte/material-symbols/sunny';
     import NightIcon from '@iconify-svelte/material-symbols/mode-night';
@@ -19,6 +20,8 @@
     let mode = $state("dark");
     let content_wrapper: HTMLDivElement;
     let navbar: HTMLElement;
+    let toastContent = $state("");
+    let toastLevel = $state("");
 
     function updateTournament(tt:Tournament, configuring=false, initializing=false, running=false){
         if(configuring){
@@ -45,7 +48,7 @@
             time                 : dateString.split("T")[1].split("Z")[0].substring(0, 5),
             modified             : dateString,
             location             : "",
-            players              : [{name:"Player 1", icon: "empty"},{name:"Player 2", icon: "empty"},{name:"Player 3", icon: "empty"}],
+            players              : [{id: 0, name:"Player 1", icon: "empty"},{id: 1, name:"Player 2", icon: "empty"},{id: 2, name:"Player 3", icon: "empty"},{id: 3, name:"Player 4", icon: "empty"}],
             matches              : null,
             round                : 0
         }
@@ -71,16 +74,15 @@
         view = 1;
     }
 
-    function addPlayerToTournament(tt:Tournament){
-        tt.players?.push({name:"Player " + (tt.players.length + 1), icon: "empty"})
-        tts[tt.id] = tt
+
+
+      function triggerToast(msg:string, level="warning"){
+        toastContent = msg;
+        toastLevel = level;
     }
 
-    function removePlayerFromTournament(tt:Tournament, playerId:number){
-        if (tt.players.length > 0) {
-            tt.players.splice(playerId, 1);
-            tts[tt.id] = tt
-        }
+    function hideToast(){
+        toastLevel = "";
     }
 
     function switchMode(tmpMode:string) {
@@ -124,15 +126,17 @@
         {#if view == 0}
             <SelectionView tournaments={$state.snapshot(tts)} createNewTournament={createNewTournament} selectTournament={selectTournament}/>
         {:else if view == 1}
-            <GeneralView tournament={$state.snapshot(tts[tournamentId])} deleteTournament={deleteTournament} updateTournament={updateTournament} addPlayerToTournament={addPlayerToTournament} removePlayerFromTournament={removePlayerFromTournament}/>
+            <GeneralView tournament={$state.snapshot(tts[tournamentId])} triggerToast={triggerToast} deleteTournament={deleteTournament} updateTournament={updateTournament} />
         {:else if view == 2}
-            <MatchesView tournament={$state.snapshot(tts[tournamentId])} updateTournament={updateTournament}/>
+            <MatchesView tournament={$state.snapshot(tts[tournamentId])} triggerToast={triggerToast} updateTournament={updateTournament}/>
         {:else if view == 3}
             Overview
         {/if}
     </div>
-    
+    <Toast toastContent={toastContent} toastLevel={toastLevel}  hideToast={hideToast}/>
 </div>
+
+
 
 
 <style>
@@ -148,7 +152,7 @@
         color-scheme: dark;
         font-family: Open-Sans,sans-serif;
         gap: 0.25rem;
-        transition: background-color 0.3s ease, color 0.3s ease;
+        transition: all 0.3s ease;
         
     }
     .navbar::after{
@@ -211,7 +215,7 @@
         color-scheme: dark;
         font-family: Open-Sans,sans-serif;
         font-size: 1rem;
-        transition: background-color 0.3s ease, color 0.3s ease;
+        transition: all 0.3s ease;
     }
     .content{
         width: 1500px;
@@ -230,18 +234,19 @@
         align-items: center;
         justify-content: center;
         color: light-dark(var(--light-text), var(--dark-text));
-        transition: color 0.3s ease, color 0.3s ease;
-        transition: border-color 0.3s ease, color 0.3s ease;
+        transition: all 0.3s ease;
         
         
     }
 
     :global(.ots-button-success){
         background-color: var(--scale-green);
+        color: var(--dark-text);
     }
 
     :global(.ots-button-danger){
         background-color: var(--wine-red);
+        color: var(--dark-text);
     }
 
     :global(.ots-button-warning){
@@ -255,7 +260,7 @@
 
     :global(.ots-button:hover){
         border-color: light-dark(var(--light-hover), var(--dark-hover));
-        transition: border-color 0.3s ease, color 0.3s ease;
+        transition: border-color 0.3s ease;
         cursor: pointer;
     }
 

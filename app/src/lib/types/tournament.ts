@@ -17,6 +17,7 @@ export type Tournaments = {
     }
 
 export type Player = {
+    id: number
     name: string
     icon: string
 }
@@ -26,7 +27,7 @@ export type Match = {
     player1Points: number
     player2: Player | null
     player2Points: number
-    winner: Player | null
+    winner: number
     roundId: number
     nextRoundId: number
     nextMatchId: number

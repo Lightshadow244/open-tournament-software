@@ -55,6 +55,7 @@
     border-style: solid;
     border-width: 1px 2px 2px 1px;
     border-color: light-dark(var(--light-highlight), var(--dark-highlight));
+    transition: border-color 0.3s ease, color 0.3s ease;
     padding: 10px;
     display:grid;
     gap: 0.25rem;
@@ -68,6 +69,7 @@
 
 .tournament:hover{
     border-color: light-dark(var(--light-hover), var(--dark-hover));
+    transition: border-color 0.3s ease, color 0.3s ease;
     cursor: pointer;
 }
 

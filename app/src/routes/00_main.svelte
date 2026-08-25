@@ -148,6 +148,7 @@
         color-scheme: dark;
         font-family: Open-Sans,sans-serif;
         gap: 0.25rem;
+        transition: background-color 0.3s ease, color 0.3s ease;
         
     }
     .navbar::after{
@@ -210,6 +211,7 @@
         color-scheme: dark;
         font-family: Open-Sans,sans-serif;
         font-size: 1rem;
+        transition: background-color 0.3s ease, color 0.3s ease;
     }
     .content{
         width: 1500px;
@@ -228,6 +230,8 @@
         align-items: center;
         justify-content: center;
         color: light-dark(var(--light-text), var(--dark-text));
+        transition: color 0.3s ease, color 0.3s ease;
+        transition: border-color 0.3s ease, color 0.3s ease;
         
         
     }
@@ -251,6 +255,7 @@
 
     :global(.ots-button:hover){
         border-color: light-dark(var(--light-hover), var(--dark-hover));
+        transition: border-color 0.3s ease, color 0.3s ease;
         cursor: pointer;
     }
 

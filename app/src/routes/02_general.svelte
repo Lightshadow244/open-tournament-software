@@ -187,6 +187,7 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
         height: 25px;
         border-width: 2px;
         border-color: light-dark(var(--light-highlight), var(--dark-highlight));
+        transition: border-color 0.3s ease, color 0.3s ease;
         border-style: solid;
         border-radius: 0.3rem;
         background-color: rgba(255,255,255,0.0);
@@ -202,6 +203,7 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
 
     .mode-disabled{
         color: light-dark(var(--light-disabled), var(--dark-disabled));
+        transition: color 0.3s ease, color 0.3s ease;
     }
 
     .button-add-participant{
@@ -214,10 +216,12 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
         border-style: solid;
         border-width: 2px;
         border-color: light-dark(var(--light-highlight), var(--dark-highlight));
+        transition: border-color 0.3s ease, color 0.3s ease;
         padding:0;
         height:25px;
         font-size: 1rem;
         color: light-dark(var(--light-text), var(--dark-text));
+        transition: color 0.3s ease, color 0.3s ease;
         
     }
 
@@ -227,6 +231,7 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
         border-style:solid;
         border-width: 0 0 1px 0;
         border-color: light-dark(var(--light-highlight), var(--dark-highlight));
+        transition: border-color 0.3s ease, color 0.3s ease;
         margin-top: 10px;
         margin-bottom: 10px;
     }
@@ -256,6 +261,7 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
 
     .participants-table thead tr *{
         background-color: light-dark(var(--light-hover), var(--dark-hover));
+        transition: background-color 0.3s ease, color 0.3s ease;
         text-align: left;
     }
     .participants-table th,
@@ -266,10 +272,12 @@ let { tournament, deleteTournament, updateTournament, addPlayerToTournament, rem
 
     .participants-table tbody tr {
         border-bottom: 1px solid light-dark(var(--light-hover), var(--dark-hover));
+        transition: border-color 0.3s ease, color 0.3s ease;
     }
 
     .participants-table tbody tr:nth-of-type(even) td{
         background-color: light-dark(var(--light-highlight), var(--dark-highlight));
+        transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     /* .participants-table tbody tr td{

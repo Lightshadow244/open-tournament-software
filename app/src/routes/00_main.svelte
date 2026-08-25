@@ -164,10 +164,10 @@
         height: 4px;
         position: absolute;
     }
-    .home-link{
+    /* .home-link{
     }
     .nav-item{
-    }
+    } */
     .nav-start{
         margin-left: 3rem;
     }

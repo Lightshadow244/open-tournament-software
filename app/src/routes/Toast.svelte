@@ -3,8 +3,6 @@
 
     import CloseSmallRoundedIcon from '@iconify-svelte/material-symbols/close-small-rounded';
     let props = $props();
-
-    console.log(props.toastContent);
     
 </script>
 

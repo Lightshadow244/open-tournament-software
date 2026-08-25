@@ -56,6 +56,7 @@
         }
     }
 
+    // svelte-ignore state_referenced_locally
     if (tournament.status === "initializing") {
         tournament.matches = calculateMatches(tournament.mode, tournament.players);
         updateTournament(tournament, false, false, true);
@@ -173,18 +174,6 @@
         margin: 0.5em auto 0.5em auto;
     }
 
-    /* input[type="text"]{
-        background-color: rgba(255,255,255,0.0);
-        border-radius: 0.3rem;
-        border-style: solid;
-        border-width: 2px;
-        border-color: light-dark(var(--light-highlight), var(--dark-highlight));
-        transition: all 0.3s ease;
-        padding:0;
-        height:25px;
-        font-size: 1rem;
-    } */
-
     input[type="number"]{
         background-color: rgba(255,255,255,0.0);
         border-radius: 0.3rem;
@@ -197,24 +186,6 @@
         color: light-dark(var(--light-text), var(--dark-text));
         transition: all 0.3s ease;
         
-    }
-
-    .crown1-wrapper{
-        position: absolute;
-        right:-1rem;
-        top: 50%;
-    }
-
-    .crown2-wrapper{
-        position: absolute;
-        left:-1rem;
-        top: 50%;
-    }
-
-    .crown-vs-wrapper{
-        position: absolute;
-        
-        top: -1rem;
     }
 
     .vs{

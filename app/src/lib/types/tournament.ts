@@ -8,7 +8,7 @@ export type Tournament = {
     modified: string
     location: string
     players: Array<Player>
-    matches: Array<Array<Match>> | null
+    matches: Array<Array<Match>>
     round: number
 }
 

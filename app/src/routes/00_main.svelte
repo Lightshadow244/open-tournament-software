@@ -25,11 +25,13 @@
 
     function updateTournament(tt:Tournament, configuring=false, initializing=false, running=false){
         if(configuring){
-            tt.status = "configuring"
+            tt.status = "configuring";
+            tt.matches = [];
+            tt.round = 0;
         }else if(initializing){
-            tt.status = "initializing"
+            tt.status = "initializing";
         }else if(running){
-            tt.status = "running"
+            tt.status = "running";
         }
 
         tts[tt.id] = tt
@@ -49,7 +51,7 @@
             modified             : dateString,
             location             : "",
             players              : [{id: 0, name:"Player 1", icon: "empty"},{id: 1, name:"Player 2", icon: "empty"},{id: 2, name:"Player 3", icon: "empty"},{id: 3, name:"Player 4", icon: "empty"}],
-            matches              : null,
+            matches              : [],
             round                : 0
         }
 

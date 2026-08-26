@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { Tournament } from '$lib/types/tournament';
 
-    import { calculateMatches, prepareNextRound } from '$lib/calculateMatches';
+    import { calculateMatches } from '$lib/calculateMatches';
 
     import CrownIcon from '@iconify-svelte/material-symbols/crown';
 
@@ -36,19 +36,23 @@
     }
 
     function nextRound(){
+        console.log("nextRound")
         if (tournament.matches != null) {
             let matchesHaveWinner = true;
             tournament.matches.forEach(round => {
                 round.forEach(match => {
                     if (match.winner == 0) {
                         matchesHaveWinner = false;
+                        console.log(match)
                     }
                 })
             });
 
             if (matchesHaveWinner) {
                tournament.round++;
-                tournament.matches = prepareNextRound(tournament.matches);
+                tournament.matches = calculateMatches(tournament.mode, tournament.players, tournament.matches);
+                console.log("after new matches")
+                console.log(tournament.players)
                 updateTournament(tournament);  
             }else{
                 triggerToast("There are matches without a winner!", "error");
@@ -58,13 +62,14 @@
 
     // svelte-ignore state_referenced_locally
     if (tournament.status === "initializing") {
-        tournament.matches = calculateMatches(tournament.mode, tournament.players);
+        console.log("initializing")
+        console.log(tournament.matches)
+        tournament.matches = calculateMatches(tournament.mode, tournament.players, tournament.matches);
         updateTournament(tournament, false, false, true);
     }else if (tournament.status === "running"){
         console.log("running")
     }
 </script>
-<!-- {JSON.stringify(tournament.matches)} -->
 {#if tournament.status === "running"}
     {#each tournament.matches as round, roundIndex (roundIndex)}
         {#if round[0].player1?.name != null && round[0].player2?.name != null}

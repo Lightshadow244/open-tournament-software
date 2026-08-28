@@ -5,7 +5,6 @@
         tournament: Tournament;
         }
     let { tournament }: Props = $props();
-    console.log(tournament);
 
 </script>
 

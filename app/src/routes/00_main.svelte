@@ -3,6 +3,7 @@
     
     import { resolve } from '$app/paths';
     import { updateTournaments, loadTournaments} from '$lib/db';
+
     import SelectionView from "./01_selection.svelte";
     import GeneralView from './02_general.svelte';
     import MatchesView from './03_matches.svelte';
@@ -26,8 +27,9 @@
     function updateTournament(tt:Tournament, configuring=false, initializing=false, running=false){
         if(configuring){
             tt.status = "configuring";
-            tt.matches = [];
+            tt.roundsAndMatches = [];
             tt.round = 0;
+            tt.ranks = []
         }else if(initializing){
             tt.status = "initializing";
         }else if(running){
@@ -51,8 +53,9 @@
             modified             : dateString,
             location             : "",
             players              : [{id: 0, name:"Player 1", icon: "empty"},{id: 1, name:"Player 2", icon: "empty"},{id: 2, name:"Player 3", icon: "empty"},{id: 3, name:"Player 4", icon: "empty"}],
-            matches              : [],
-            round                : 0
+            roundsAndMatches     : [],
+            round                : 0,
+            ranks               : []
         }
 
         tts[new_tt.id] = new_tt;
@@ -113,10 +116,8 @@
 
     <button class="nav-item nav-auto nav-end ots-button" onclick={() => {switchMode(mode)}}>
         {#if mode === "dark"}
-            <!-- <span class="material-icons ots-icon">mode_night</span>  -->
              <NightIcon height="1rem" color="currentcolor"/>
         {:else if  mode === "light"}
-            <!-- <span class="material-icons ots-icon">wb_sunny</span>  -->
              <SunnyIcon height="1rem" color="currentcolor"/>
         {/if}
         
@@ -155,6 +156,7 @@
         font-family: Open-Sans,sans-serif;
         gap: 0.25rem;
         transition: all 0.3s ease;
+        z-index: 999;
         
     }
     .navbar::after{
@@ -214,6 +216,7 @@
         width: 100%;
         min-height: 100vh;
         padding-top: 5rem;
+        padding-bottom: 5rem;
         color-scheme: dark;
         font-family: Open-Sans,sans-serif;
         font-size: 1rem;

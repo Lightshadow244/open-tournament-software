@@ -49,20 +49,23 @@ function saveAndStartTournament(){
 
 <form>
     <label for="title">Title</label>
-    <!-- <input type="text" id="title" name="title" bind:value={tournament.title} onfocusout={() => updateTournament(tournament)}> -->
+    <!-- svelte-ignore binding_property_non_reactive -->
     <input class="{tournament.status === "configuring" ? "" : "mode-disabled"}" type="text" id="title" name="title" bind:value={tournament.title} disabled={tournament.status === "configuring" ? false : true}>
 
     <div class="input-wrapper">
         <div class="input-element">
             <label for="date">Date</label>
+            <!-- svelte-ignore binding_property_non_reactive -->
             <input class="{tournament.status === "configuring" ? "" : "mode-disabled"}" type="date" id="date" name="date" bind:value={tournament.date} disabled={tournament.status === "configuring" ? false : true}>
         </div>
         <div class="input-element">
             <label for="time">Time</label>
+            <!-- svelte-ignore binding_property_non_reactive -->
             <input class="{tournament.status === "configuring" ? "" : "mode-disabled"}" type="time" id="time" name="time" bind:value={tournament.time} disabled={tournament.status === "configuring" ? false : true}>
         </div>
         <div class="input-element">
             <label for="location">Location</label>
+            <!-- svelte-ignore binding_property_non_reactive -->
             <input class="{tournament.status === "configuring" ? "" : "mode-disabled"}" type="text" id="location" name="location" bind:value={tournament.location} disabled={tournament.status === "configuring" ? false : true}>
         </div>
     </div>
@@ -71,26 +74,31 @@ function saveAndStartTournament(){
     <legend>Tournament Mode</legend>
     <div class="mode-wrapper">
         <label class="mode-element" for="singleElimination">
+            <!-- svelte-ignore binding_property_non_reactive -->
             <input type="radio" id="singleElimination" name="mode" value="Single Elimination" bind:group={tournament.mode} disabled={tournament.status === "configuring" ? false : true}/>
             <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Single Elimination</span>
         </label>
 
         <label class="mode-element" for="doubleElimination">
+            <!-- svelte-ignore binding_property_non_reactive -->
             <input type="radio" id="doubleElimination" name="mode" value="Double Elimination" bind:group={tournament.mode} disabled={tournament.status === "configuring" ? false : true}/>
             <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Double Elimination</span>
         </label>
 
         <label class="mode-element" for="roundRobin">
+            <!-- svelte-ignore binding_property_non_reactive -->
             <input type="radio" id="roundRobin" name="mode" value="Round Robin" bind:group={tournament.mode} disabled={tournament.status === "configuring" ? false : true}/>
             <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Round Robin</span>
         </label>
 
         <label class="mode-element" for="groupStageWithElimination">
+            <!-- svelte-ignore binding_property_non_reactive -->
             <input type="radio" id="groupStageWithElimination" name="mode" value="Group Stage + Elimination" bind:group={tournament.mode} disabled={tournament.status === "configuring" ? false : true}/>
             <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Group Stage + Elimination</span>
         </label>
 
         <label class="mode-element" for="swissSystem">
+            <!-- svelte-ignore binding_property_non_reactive -->
             <input type="radio" id="swissSystem" name="mode" value="Swiss System" bind:group={tournament.mode} disabled={tournament.status === "configuring" ? false : true}/>
             <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Swiss System</span>
         </label>
@@ -120,7 +128,9 @@ function saveAndStartTournament(){
         {#each tournament.players as p, i (i) }
             <tr>
                 <td><div class="mode-disabled">{p.id + 1}</div></td>
+                <!-- svelte-ignore binding_property_non_reactive -->
                 <td><input class="{tournament.status === "configuring" ? "" : "mode-disabled"}" type="text" bind:value={p.name} disabled={tournament.status === "configuring" ? false : true}></td>
+                <!-- svelte-ignore binding_property_non_reactive -->
                 <td><input class="{tournament.status === "configuring" ? "" : "mode-disabled"}" type="text" bind:value={p.icon} disabled={tournament.status === "configuring" ? false : true}></td>
                 
                 <td class="participants-table-delete">
@@ -337,8 +347,7 @@ function saveAndStartTournament(){
         border-radius: 0.3rem;
         padding:5px;
         display: none;
-        width: 29rem;
-        
+        width: max-content;
     }
 
     .configure-info-content{

@@ -6,43 +6,52 @@
     
 </script>
 
-{#if props.toastLevel === "error"}
-    <div class="toast toast-danger" transition:fade>
-        <div>
-            {props.toastContent}
+<div class="wrapper">
+
+    {#if props.toastLevel === "error"}
+        <div class="toast toast-danger" transition:fade>
+            <div>
+                {props.toastContent}
+            </div>
+            <button onclick={() => props.hideToast()}>
+                <CloseSmallRoundedIcon height="1rem" color="currentcolor"/>
+            </button>
         </div>
-        <button onclick={() => props.hideToast()}>
-            <CloseSmallRoundedIcon height="1rem" color="currentcolor"/>
-        </button>
-    </div>
-{:else if props.toastLevel === "warning"}
-    <div class="toast toast-warning" transition:fade>
-        <div>
-            {props.toastContent}
+    {:else if props.toastLevel === "warning"}
+        <div class="toast toast-warning" transition:fade>
+            <div>
+                {props.toastContent}
+            </div>
+            <button onclick={() => props.hideToast()}>
+                <CloseSmallRoundedIcon height="1rem" color="currentcolor"/>
+            </button>
         </div>
-        <button onclick={() => props.hideToast()}>
-            <CloseSmallRoundedIcon height="1rem" color="currentcolor"/>
-        </button>
-    </div>
-{:else if props.toastLevel === "success"}   
-    <div class="toast toast-success" transition:fade>
-        <div>
-            {props.toastContent}
+    {:else if props.toastLevel === "success"}   
+        <div class="toast toast-success" transition:fade>
+            <div>
+                {props.toastContent}
+            </div>
+            <button onclick={() => props.hideToast()}>
+                <CloseSmallRoundedIcon height="1rem" color="currentcolor"/>
+            </button>
         </div>
-        <button onclick={() => props.hideToast()}>
-            <CloseSmallRoundedIcon height="1rem" color="currentcolor"/>
-        </button>
-    </div>
-{/if}
+    {/if}
+
+</div>
 
 <style>
-    .toast{
+    .wrapper{
         position: fixed;
-        display: flex;
         bottom: 5px;
+        width: 100%;
+        justify-content: center;
+        display: flex;
+        
+    }
+    .toast{
+        display: flex;
         padding: 5px;
         gap: 5px;
-        left: 50%;
         border-radius: 0.3rem;
         border-style: solid;
         border-width: 2px 2px 2px 2px;

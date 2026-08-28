@@ -8,8 +8,9 @@ export type Tournament = {
     modified: string
     location: string
     players: Array<Player>
-    matches: Array<Array<Match>>
+    roundsAndMatches: Array<Array<Match>>
     round: number
+    ranks: Array<Player>
 }
 
 export type Tournaments = {
@@ -27,9 +28,15 @@ export type Match = {
     player1Points: number
     player2: Player | null
     player2Points: number
-    winner: number
+    winner: Player | null
+    winnerId: number
+    loser: Player | null
     roundId: number
     nextRoundId: number
     nextMatchId: number
     matchId: number
+    name: string,
+    final: boolean,
+    semiFinal: boolean,
+    littleFinal: boolean
 }

@@ -1,7 +1,10 @@
 <script lang="ts">
-    import type { Tournament } from '$lib/types/tournament';
+    import type { Tournament, Player } from '$lib/types/tournament';
 
-    import { calculateMatches } from '$lib/calculateMatches';
+    import { fade } from 'svelte/transition';
+    import { calculateMatches, calculateRanks } from '$lib/calculateMatches';
+
+    import Podium from "./Podium.svelte"
 
     import CrownIcon from '@iconify-svelte/material-symbols/crown';
 
@@ -15,86 +18,115 @@
     let { tournament, updateTournament, triggerToast }: Props = $props();
 
     function changePlayerPoints(roundId:number, matchId:number, playerId:number, points:number){
-        if (tournament.matches != null) {
+        if (tournament.roundsAndMatches != null) {
             // add points
             if (playerId == 1) {
-                tournament.matches[roundId][matchId].player1Points = points;
+                tournament.roundsAndMatches[roundId][matchId].player1Points = points;
             }else if(playerId == 2){
-                tournament.matches[roundId][matchId].player2Points = points;
+                tournament.roundsAndMatches[roundId][matchId].player2Points = points;
             }
 
             //change winner
-            if (tournament.matches[roundId][matchId].player1Points == tournament.matches[roundId][matchId].player2Points) {
-                tournament.matches[roundId][matchId].winner = 0
-            }else if (tournament.matches[roundId][matchId].player1Points > tournament.matches[roundId][matchId].player2Points) {
-                tournament.matches[roundId][matchId].winner = 1
-            }else if (tournament.matches[roundId][matchId].player1Points < tournament.matches[roundId][matchId].player2Points) {
-                tournament.matches[roundId][matchId].winner = 2
+            if (tournament.roundsAndMatches[roundId][matchId].player1Points == tournament.roundsAndMatches[roundId][matchId].player2Points) {
+                tournament.roundsAndMatches[roundId][matchId].winner = null;
+                tournament.roundsAndMatches[roundId][matchId].loser = null
+                tournament.roundsAndMatches[roundId][matchId].winnerId = 0;
+            }else if (tournament.roundsAndMatches[roundId][matchId].player1Points > tournament.roundsAndMatches[roundId][matchId].player2Points) {
+                tournament.roundsAndMatches[roundId][matchId].winner = tournament.roundsAndMatches[roundId][matchId].player1
+                tournament.roundsAndMatches[roundId][matchId].loser = tournament.roundsAndMatches[roundId][matchId].player2
+                tournament.roundsAndMatches[roundId][matchId].winnerId = 1;
+            }else if (tournament.roundsAndMatches[roundId][matchId].player1Points < tournament.roundsAndMatches[roundId][matchId].player2Points) {
+                tournament.roundsAndMatches[roundId][matchId].winner = tournament.roundsAndMatches[roundId][matchId].player2
+                tournament.roundsAndMatches[roundId][matchId].loser = tournament.roundsAndMatches[roundId][matchId].player1
+                tournament.roundsAndMatches[roundId][matchId].winnerId = 2;
             }
             updateTournament(tournament); 
         }
     }
 
     function nextRound(){
-        console.log("nextRound")
-        if (tournament.matches != null) {
-            let matchesHaveWinner = true;
-            tournament.matches.forEach(round => {
+        if (tournament.roundsAndMatches != null) {
+            let roundsAndMatchesHaveWinner = true;
+            tournament.roundsAndMatches.forEach(round => {
                 round.forEach(match => {
-                    if (match.winner == 0) {
-                        matchesHaveWinner = false;
-                        console.log(match)
+                    if (match.winner == null) {
+                        roundsAndMatchesHaveWinner = false;
                     }
                 })
             });
 
-            if (matchesHaveWinner) {
-               tournament.round++;
-                tournament.matches = calculateMatches(tournament.mode, tournament.players, tournament.matches);
-                console.log("after new matches")
-                console.log(tournament.players)
-                updateTournament(tournament);  
+            if (roundsAndMatchesHaveWinner) {
+                
+                tournament.round++;
+                tournament.roundsAndMatches = calculateMatches(tournament.mode, tournament.players, tournament.roundsAndMatches);
+                
+                updateTournament(tournament); 
+                
+                 
             }else{
-                triggerToast("There are matches without a winner!", "error");
+                triggerToast("There are roundsAndMatches without a winner!", "error");
             }               
         }
     }
 
+    function finish(){
+
+        let lastMatch = tournament.roundsAndMatches[tournament.roundsAndMatches.length - 1][0];
+
+        if (lastMatch.winner != null) {
+            tournament.ranks = calculateRanks(tournament);
+            updateTournament(tournament);
+        }else{
+            triggerToast("There are roundsAndMatches without a winner!", "error");
+        }
+        
+    }
+
     // svelte-ignore state_referenced_locally
     if (tournament.status === "initializing") {
-        console.log("initializing")
-        console.log(tournament.matches)
-        tournament.matches = calculateMatches(tournament.mode, tournament.players, tournament.matches);
+        tournament.roundsAndMatches = calculateMatches(tournament.mode, tournament.players, tournament.roundsAndMatches);
         updateTournament(tournament, false, false, true);
     }else if (tournament.status === "running"){
         console.log("running")
+        console.log(tournament)
     }
 </script>
 {#if tournament.status === "running"}
-    {#each tournament.matches as round, roundIndex (roundIndex)}
+    {#each tournament.roundsAndMatches as round, roundIndex (roundIndex)}
         {#if round[0].player1?.name != null && round[0].player2?.name != null}
-        <div class="round-wrapper">
-            <h3 class="round-title">Round {roundIndex + 1}</h3>
+        <div class="round-wrapper" transition:fade>
+            
+            {#if round[0].final}
+                <h3 class="round-title">Final</h3>
+            {:else if round[0].semiFinal}
+                <h3 class="round-title">Semi-Final</h3>
+            {:else}
+                <h3 class="round-title">Round {roundIndex + 1}</h3>
+            {/if}
+
             {#each round as match, matchIndex  (matchIndex)}
             <div class="match-wrapper">
-                <h4 class="match-title">Match {match.matchId + 1}</h4>
+
+                <h4 class="match-title">{match.name}</h4>
+
                 <div class="player-wrapper">
                     <div>
                         <div class="player-name">
                             {match.player1?.name}
                         </div>
                         <div class="player-counter">
+                            <!-- svelte-ignore binding_property_non_reactive -->
                             <input 
                                 class="player-points" 
                                 type="number" 
                                 bind:value={match.player1Points}
-                                onchange={(event) => changePlayerPoints(roundIndex, matchIndex, 1 ,Number((event.currentTarget as HTMLInputElement).value))}>
+                                onchange={(event) => changePlayerPoints(roundIndex, matchIndex, 1 ,Number((event.currentTarget as HTMLInputElement).value))} disabled={tournament.round == roundIndex ? false : true}>
                         </div>
                     </div>
 
                     <div class="vs">
                         vs
-                         <div class="test-crown-wrapper {match.winner == 0?"test-crown-wrapper-up":""} {match.winner == 1?"test-crown-wrapper-left":""} {match.winner == 2?"test-crown-wrapper-right":""}">
+                         <div class="test-crown-wrapper {match.winner == null?"test-crown-wrapper-up":""} {match.winnerId == 1?"test-crown-wrapper-left":""} {match.winnerId == 2?"test-crown-wrapper-right":""}">
                             <CrownIcon height="1rem" color="currentcolor"/>
                         </div>
                     </div>
@@ -104,17 +136,18 @@
                             {match.player2?.name}
                         </div>
                         <div class="player-counter">
+                            <!-- svelte-ignore binding_property_non_reactive -->
                             <input 
                                 class="player-points" 
                                 type="number" 
                                 bind:value={match.player2Points}
-                                onchange={(event) => changePlayerPoints(roundIndex, matchIndex, 2 ,Number((event.currentTarget as HTMLInputElement).value))}>
+                                onchange={(event) => changePlayerPoints(roundIndex, matchIndex, 2 ,Number((event.currentTarget as HTMLInputElement).value))} disabled={tournament.round == roundIndex ? false : true}>
                         </div>
                     </div>
                 </div>
             </div>    
             {/each}
-            {#if tournament.round == roundIndex}
+            {#if tournament.round == roundIndex && tournament.roundsAndMatches[tournament.roundsAndMatches.length - 1][0].nextMatchId != -1}
                 <div>
                     <button class="ots-button ots-button-success" onclick={() => nextRound()}>Next Round</button>
                 </div>
@@ -123,6 +156,15 @@
         </div>
         {/if}
     {/each}
+    {#if tournament.roundsAndMatches[tournament.roundsAndMatches.length - 1][0].final && tournament.ranks.length == 0}
+        <div>
+            <button class="ots-button ots-button-success" onclick={() => finish()}>Finish</button>
+        </div>
+    {:else if tournament.ranks.length != 0}
+        <div transition:fade>
+            <Podium tournament={tournament}/>
+        </div>
+    {/if }
 {/if}
 
 <style>
@@ -130,6 +172,7 @@
         display: flex;
         flex-direction: column;
         gap: 20px;
+        margin-bottom: 3rem;
     }
     .round-title{
         margin: 0;

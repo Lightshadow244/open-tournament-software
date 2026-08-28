@@ -1,12 +1,20 @@
-import type { Player, Match } from '$lib/types/tournament';
+import type { Tournament, Player, Match } from '$lib/types/tournament';
 
 export function calculateMatches(mode:string, players:Array<Player>, roundsAndMatches:Array<Array<Match>>):Array<Array<Match>>{
     
     if (mode === "Single Elimination") {
         roundsAndMatches = calculateSingleEliminationMatches(players, roundsAndMatches);
+        // roundsAndMatches = checkForFinalAndSemiFinal(roundsAndMatches);
     }
-
     return(roundsAndMatches)
+}
+
+export function calculateRanks(tournament: Tournament): Array<Player>{
+    let  ranks = <Array<Player>> [];
+    if (tournament.mode === "Single Elimination") {
+        ranks = calculateSingleEliminationRanks(tournament.roundsAndMatches)
+    }
+    return(ranks);
 }
 
 export function calculateSingleEliminationMatches(players:Array<Player>, roundsAndMatches:Array<Array<Match>>):Array<Array<Match>>{
@@ -28,11 +36,17 @@ export function calculateSingleEliminationMatches(players:Array<Player>, roundsA
                 player1Points: 0,
                 player2: null,
                 player2Points: 0,
-                winner: 0,
+                winner: null,
+                winnerId: 0,
+                loser: null,
                 roundId: roundId,
                 nextRoundId: roundId + 1,
                 matchId: matchId,
-                nextMatchId: Math.floor(matchId / 2)
+                nextMatchId: Math.floor(matchId / 2),
+                name: "",
+                final: false,
+                semiFinal: false,
+                littleFinal: false
                 } as Match;
             if (roundId == 0) {
                 newMatch.player1 = players[matchId * 2];
@@ -46,22 +60,67 @@ export function calculateSingleEliminationMatches(players:Array<Player>, roundsA
         if (roundId > 0) {
             roundsAndMatches[roundsAndMatches.length - 2].forEach(lastMatch => {
                 if (roundsAndMatches[roundsAndMatches.length - 1][lastMatch.nextMatchId].player1 == null) {
-                    if (lastMatch.winner == 1) {
-                        roundsAndMatches[roundsAndMatches.length - 1][lastMatch.nextMatchId].player1 = lastMatch.player1;
-                    }else if(lastMatch.winner == 2){
-                        roundsAndMatches[roundsAndMatches.length - 1][lastMatch.nextMatchId].player1 = lastMatch.player2;
-                    } 
+                    roundsAndMatches[roundsAndMatches.length - 1][lastMatch.nextMatchId].player1 = lastMatch.winner;
                 }else{
-                    if (lastMatch.winner == 1) {
-                        roundsAndMatches[roundsAndMatches.length - 1][lastMatch.nextMatchId].player2 = lastMatch.player1;
-                    }else if(lastMatch.winner == 2){
-                        roundsAndMatches[roundsAndMatches.length - 1][lastMatch.nextMatchId].player2 = lastMatch.player2;
-                    } 
+                    roundsAndMatches[roundsAndMatches.length - 1][lastMatch.nextMatchId].player2 = lastMatch.winner;
                 }
                 
             })
         }
+
+        // check for semi-final; check for final match and add little final
+        if (roundsAndMatches[roundId].length == 2){
+            roundsAndMatches[roundId][0].name = "Semi-Final 1";
+            roundsAndMatches[roundId][0].semiFinal = true;
+            roundsAndMatches[roundId][1].name = "Semi-Final 2";
+            roundsAndMatches[roundId][1].semiFinal = true;
+        }else if (roundsAndMatches[roundId].length == 1){
+            roundsAndMatches[roundId][0].nextRoundId = -1;
+            roundsAndMatches[roundId][0].nextMatchId = -1;
+            roundsAndMatches[roundId][0].name = "Final";
+            roundsAndMatches[roundId][0].final = true;
+
+            const newMatch = {
+                player1: null,
+                player1Points: 0,
+                player2: null,
+                player2Points: 0,
+                winnerId: 0,
+                winner: null,
+                loser: null,
+                roundId: roundId,
+                nextRoundId: -1,
+                matchId: matchId,
+                nextMatchId: -1,
+                name: "Little-Final",
+                final: false,
+                semiFinal: false,
+                littleFinal: true
+                } as Match;
+            
+            const semiFinalMatches = roundsAndMatches[roundsAndMatches.length - 2];
+            newMatch.player1 = semiFinalMatches[0].loser;
+            newMatch.player2 = semiFinalMatches[1].loser;
+
+            roundsAndMatches[roundId].push(newMatch);
+
+        }
+
+        
         
     }
     return(roundsAndMatches)
+}
+
+function calculateSingleEliminationRanks(roundsAndMatches: Array<Array<Match>>):Array<Player> {
+    let  ranks = <Array<Player>>  [];
+
+    let final = roundsAndMatches[roundsAndMatches.length - 1];
+
+    ranks.push(<Player> final[0].winner);
+    ranks.push(<Player> final[0].loser);
+    ranks.push(<Player> final[1].winner);
+    ranks.push(<Player> final[1].loser);
+
+    return(ranks);
 }

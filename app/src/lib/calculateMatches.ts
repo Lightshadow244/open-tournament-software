@@ -17,7 +17,15 @@ export function calculateRanks(tournament: Tournament): Array<Player>{
     return(ranks);
 }
 
-export function calculateSingleEliminationMatches(players:Array<Player>, roundsAndMatches:Array<Array<Match>>):Array<Array<Match>>{
+export function fillTemporaryMatches(tournament:Tournament): Array<Array<Match>>{
+    let filledMatches = <Array<Array<Match>>> []
+    if (tournament.mode === "Single Elimination") {
+        filledMatches = fillTemporarySingleEliminationMatches(tournament)
+    }
+    return(filledMatches)
+}
+
+function calculateSingleEliminationMatches(players:Array<Player>, roundsAndMatches:Array<Array<Match>>):Array<Array<Match>>{
     
     if (players.length % 4 == 0) {
         let roundId = 0;
@@ -123,4 +131,45 @@ function calculateSingleEliminationRanks(roundsAndMatches: Array<Array<Match>>):
     ranks.push(<Player> final[1].loser);
 
     return(ranks);
+}
+
+function fillTemporarySingleEliminationMatches(tournament:Tournament): Array<Array<Match>>{
+    const maxRounds = getLog2(tournament.players.length);   // 3
+    let roundId = tournament.roundsAndMatches.length;      // 1
+
+    while (roundId < maxRounds) {
+        tournament.roundsAndMatches.push([])
+
+        let matchCount = tournament.roundsAndMatches[roundId - 1].length / 2; // 2 // 1
+
+        for (let index = 0; index < matchCount; index++) {
+            const emptyMatch = {
+                player1: null,
+                player1Points: 0,
+                player2: null,
+                player2Points: 0,
+                winnerId: 0,
+                winner: null,
+                loser: null,
+                roundId: roundId,
+                nextRoundId: -1,
+                matchId: index,
+                nextMatchId: -1,
+                name: "",
+                final: false,
+                semiFinal: false,
+                littleFinal: false
+                } as Match;
+            tournament.roundsAndMatches[roundId].push(emptyMatch);
+        }
+        roundId++;
+    }
+
+    return(tournament.roundsAndMatches);
+}
+
+
+
+export function getLog2(x:number) {
+  return Math.log(x) / Math.log(2);
 }

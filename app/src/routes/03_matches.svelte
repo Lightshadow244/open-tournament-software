@@ -118,9 +118,9 @@
                             <!-- svelte-ignore binding_property_non_reactive -->
                             <input 
                                 class="player-points" 
-                                type="number" 
+                                type="{tournament.round == roundIndex && tournament.ranks.length == 0 ? "number" : "text"}" 
                                 bind:value={match.player1Points}
-                                onchange={(event) => changePlayerPoints(roundIndex, matchIndex, 1 ,Number((event.currentTarget as HTMLInputElement).value))} disabled={tournament.round == roundIndex ? false : true}>
+                                onchange={(event) => changePlayerPoints(roundIndex, matchIndex, 1 ,Number((event.currentTarget as HTMLInputElement).value))} disabled={tournament.round == roundIndex && tournament.ranks.length == 0 ? false : true}>
                         </div>
                     </div>
 
@@ -139,9 +139,9 @@
                             <!-- svelte-ignore binding_property_non_reactive -->
                             <input 
                                 class="player-points" 
-                                type="number" 
+                                type="{tournament.round == roundIndex && tournament.ranks.length == 0 ? "number" : "text"}" 
                                 bind:value={match.player2Points}
-                                onchange={(event) => changePlayerPoints(roundIndex, matchIndex, 2 ,Number((event.currentTarget as HTMLInputElement).value))} disabled={tournament.round == roundIndex ? false : true}>
+                                onchange={(event) => changePlayerPoints(roundIndex, matchIndex, 2 ,Number((event.currentTarget as HTMLInputElement).value))} disabled={tournament.round == roundIndex && tournament.ranks.length == 0 ? false : true}>
                         </div>
                     </div>
                 </div>
@@ -222,7 +222,7 @@
         margin: 0.5em auto 0.5em auto;
     }
 
-    input[type="number"]{
+    input[type="number"], input[type="text"]{
         background-color: rgba(255,255,255,0.0);
         border-radius: 0.3rem;
         border-style: solid;

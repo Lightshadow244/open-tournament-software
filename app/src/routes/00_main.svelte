@@ -7,10 +7,12 @@
     import SelectionView from "./01_selection.svelte";
     import GeneralView from './02_general.svelte';
     import MatchesView from './03_matches.svelte';
+    import OverviewView from './04_overview.svelte';
     import Toast from "./Toast.svelte"
 
     import SunnyIcon from '@iconify-svelte/material-symbols/sunny';
     import NightIcon from '@iconify-svelte/material-symbols/mode-night';
+	import Overview from './04_overview.svelte';
 
     // let tmpTournaments = ;
 
@@ -133,7 +135,7 @@
         {:else if view == 2}
             <MatchesView tournament={$state.snapshot(tts[tournamentId])} triggerToast={triggerToast} updateTournament={updateTournament}/>
         {:else if view == 3}
-            Overview
+            <OverviewView tournament={$state.snapshot(tts[tournamentId])} triggerToast={triggerToast} updateTournament={updateTournament}/>
         {/if}
     </div>
     <Toast toastContent={toastContent} toastLevel={toastLevel}  hideToast={hideToast}/>

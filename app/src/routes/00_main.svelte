@@ -12,7 +12,6 @@
 
     import SunnyIcon from '@iconify-svelte/material-symbols/sunny';
     import NightIcon from '@iconify-svelte/material-symbols/mode-night';
-	import Overview from './04_overview.svelte';
 
     // let tmpTournaments = ;
 

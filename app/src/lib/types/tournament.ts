@@ -40,3 +40,31 @@ export type Match = {
     semiFinal: boolean,
     littleFinal: boolean
 }
+
+export function changePlayerPointsForMatch(tournament:Tournament, roundId:number, matchId:number, playerId:number, points:number):Tournament{
+        if (tournament.roundsAndMatches != null) {
+            // add points
+            if (playerId == 1) {
+                tournament.roundsAndMatches[roundId][matchId].player1Points = points;
+            }else if(playerId == 2){
+                tournament.roundsAndMatches[roundId][matchId].player2Points = points;
+            }
+
+            //change winner
+            if (tournament.roundsAndMatches[roundId][matchId].player1Points == tournament.roundsAndMatches[roundId][matchId].player2Points) {
+                tournament.roundsAndMatches[roundId][matchId].winner = null;
+                tournament.roundsAndMatches[roundId][matchId].loser = null
+                tournament.roundsAndMatches[roundId][matchId].winnerId = 0;
+            }else if (tournament.roundsAndMatches[roundId][matchId].player1Points > tournament.roundsAndMatches[roundId][matchId].player2Points) {
+                tournament.roundsAndMatches[roundId][matchId].winner = tournament.roundsAndMatches[roundId][matchId].player1
+                tournament.roundsAndMatches[roundId][matchId].loser = tournament.roundsAndMatches[roundId][matchId].player2
+                tournament.roundsAndMatches[roundId][matchId].winnerId = 1;
+            }else if (tournament.roundsAndMatches[roundId][matchId].player1Points < tournament.roundsAndMatches[roundId][matchId].player2Points) {
+                tournament.roundsAndMatches[roundId][matchId].winner = tournament.roundsAndMatches[roundId][matchId].player2
+                tournament.roundsAndMatches[roundId][matchId].loser = tournament.roundsAndMatches[roundId][matchId].player1
+                tournament.roundsAndMatches[roundId][matchId].winnerId = 2;
+            }
+        }
+        // console.log(tournament)
+        return(tournament)
+    }

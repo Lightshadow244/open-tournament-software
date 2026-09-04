@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Tournament, Player } from '$lib/types/tournament';
+    import {changePlayerPointsForMatch} from '$lib/types/tournament';
 
     import { fade } from 'svelte/transition';
     import { calculateMatches, calculateRanks } from '$lib/calculateMatches';
@@ -17,32 +18,32 @@
         }
     let { tournament, updateTournament, triggerToast }: Props = $props();
 
-    function changePlayerPoints(roundId:number, matchId:number, playerId:number, points:number){
-        if (tournament.roundsAndMatches != null) {
-            // add points
-            if (playerId == 1) {
-                tournament.roundsAndMatches[roundId][matchId].player1Points = points;
-            }else if(playerId == 2){
-                tournament.roundsAndMatches[roundId][matchId].player2Points = points;
-            }
+    // function changePlayerPoints(roundId:number, matchId:number, playerId:number, points:number){
+    //     if (tournament.roundsAndMatches != null) {
+    //         // add points
+    //         if (playerId == 1) {
+    //             tournament.roundsAndMatches[roundId][matchId].player1Points = points;
+    //         }else if(playerId == 2){
+    //             tournament.roundsAndMatches[roundId][matchId].player2Points = points;
+    //         }
 
-            //change winner
-            if (tournament.roundsAndMatches[roundId][matchId].player1Points == tournament.roundsAndMatches[roundId][matchId].player2Points) {
-                tournament.roundsAndMatches[roundId][matchId].winner = null;
-                tournament.roundsAndMatches[roundId][matchId].loser = null
-                tournament.roundsAndMatches[roundId][matchId].winnerId = 0;
-            }else if (tournament.roundsAndMatches[roundId][matchId].player1Points > tournament.roundsAndMatches[roundId][matchId].player2Points) {
-                tournament.roundsAndMatches[roundId][matchId].winner = tournament.roundsAndMatches[roundId][matchId].player1
-                tournament.roundsAndMatches[roundId][matchId].loser = tournament.roundsAndMatches[roundId][matchId].player2
-                tournament.roundsAndMatches[roundId][matchId].winnerId = 1;
-            }else if (tournament.roundsAndMatches[roundId][matchId].player1Points < tournament.roundsAndMatches[roundId][matchId].player2Points) {
-                tournament.roundsAndMatches[roundId][matchId].winner = tournament.roundsAndMatches[roundId][matchId].player2
-                tournament.roundsAndMatches[roundId][matchId].loser = tournament.roundsAndMatches[roundId][matchId].player1
-                tournament.roundsAndMatches[roundId][matchId].winnerId = 2;
-            }
-            updateTournament(tournament); 
-        }
-    }
+    //         //change winner
+    //         if (tournament.roundsAndMatches[roundId][matchId].player1Points == tournament.roundsAndMatches[roundId][matchId].player2Points) {
+    //             tournament.roundsAndMatches[roundId][matchId].winner = null;
+    //             tournament.roundsAndMatches[roundId][matchId].loser = null
+    //             tournament.roundsAndMatches[roundId][matchId].winnerId = 0;
+    //         }else if (tournament.roundsAndMatches[roundId][matchId].player1Points > tournament.roundsAndMatches[roundId][matchId].player2Points) {
+    //             tournament.roundsAndMatches[roundId][matchId].winner = tournament.roundsAndMatches[roundId][matchId].player1
+    //             tournament.roundsAndMatches[roundId][matchId].loser = tournament.roundsAndMatches[roundId][matchId].player2
+    //             tournament.roundsAndMatches[roundId][matchId].winnerId = 1;
+    //         }else if (tournament.roundsAndMatches[roundId][matchId].player1Points < tournament.roundsAndMatches[roundId][matchId].player2Points) {
+    //             tournament.roundsAndMatches[roundId][matchId].winner = tournament.roundsAndMatches[roundId][matchId].player2
+    //             tournament.roundsAndMatches[roundId][matchId].loser = tournament.roundsAndMatches[roundId][matchId].player1
+    //             tournament.roundsAndMatches[roundId][matchId].winnerId = 2;
+    //         }
+    //         updateTournament(tournament); 
+    //     }
+    // }
 
     function nextRound(){
         if (tournament.roundsAndMatches != null) {
@@ -86,13 +87,14 @@
     if (tournament.status === "initializing") {
         tournament.roundsAndMatches = calculateMatches(tournament.mode, tournament.players, tournament.roundsAndMatches);
         updateTournament(tournament, false, false, true);
-    }else if (tournament.status === "running"){
-        console.log("running")
-        console.log(tournament)
     }
+    // }else if (tournament.status === "running"){
+    //     console.log("running")
+    //     console.log(tournament)
+    // }
 </script>
 {#if tournament.status === "running"}
-    {#each tournament.roundsAndMatches as round, roundIndex (roundIndex)}
+    {#each tournament.roundsAndMatches as round, roundId (roundId)}
         {#if round[0].player1?.name != null && round[0].player2?.name != null}
         <div class="round-wrapper" transition:fade>
             
@@ -101,10 +103,10 @@
             {:else if round[0].semiFinal}
                 <h3 class="round-title">Semi-Final</h3>
             {:else}
-                <h3 class="round-title">Round {roundIndex + 1}</h3>
+                <h3 class="round-title">Round {roundId + 1}</h3>
             {/if}
 
-            {#each round as match, matchIndex  (matchIndex)}
+            {#each round as match, matchId  (matchId)}
             <div class="match-wrapper">
 
                 <h4 class="match-title">{match.name}</h4>
@@ -118,9 +120,10 @@
                             <!-- svelte-ignore binding_property_non_reactive -->
                             <input 
                                 class="player-points" 
-                                type="{tournament.round == roundIndex && tournament.ranks.length == 0 ? "number" : "text"}" 
+                                type="{tournament.round == roundId && tournament.ranks.length == 0 ? "number" : "text"}" 
                                 bind:value={match.player1Points}
-                                onchange={(event) => changePlayerPoints(roundIndex, matchIndex, 1 ,Number((event.currentTarget as HTMLInputElement).value))} disabled={tournament.round == roundIndex && tournament.ranks.length == 0 ? false : true}>
+                                onchange={(event) => {updateTournament(changePlayerPointsForMatch(tournament, roundId, matchId, 1 ,Number((event.currentTarget as HTMLInputElement).value)))}} 
+                                disabled={tournament.round == roundId && tournament.ranks.length == 0 ? false : true}>
                         </div>
                     </div>
 
@@ -139,15 +142,16 @@
                             <!-- svelte-ignore binding_property_non_reactive -->
                             <input 
                                 class="player-points" 
-                                type="{tournament.round == roundIndex && tournament.ranks.length == 0 ? "number" : "text"}" 
+                                type="{tournament.round == roundId && tournament.ranks.length == 0 ? "number" : "text"}" 
                                 bind:value={match.player2Points}
-                                onchange={(event) => changePlayerPoints(roundIndex, matchIndex, 2 ,Number((event.currentTarget as HTMLInputElement).value))} disabled={tournament.round == roundIndex && tournament.ranks.length == 0 ? false : true}>
+                                onchange={(event) => {updateTournament(changePlayerPointsForMatch(tournament, roundId, matchId, 2 ,Number((event.currentTarget as HTMLInputElement).value)))}} 
+                                disabled={tournament.round == roundId && tournament.ranks.length == 0 ? false : true}>
                         </div>
                     </div>
                 </div>
             </div>    
             {/each}
-            {#if tournament.round == roundIndex && tournament.roundsAndMatches[tournament.roundsAndMatches.length - 1][0].nextMatchId != -1}
+            {#if tournament.round == roundId && tournament.roundsAndMatches[tournament.roundsAndMatches.length - 1][0].nextMatchId != -1}
                 <div>
                     <button class="ots-button ots-button-success" onclick={() => nextRound()}>Next Round</button>
                 </div>

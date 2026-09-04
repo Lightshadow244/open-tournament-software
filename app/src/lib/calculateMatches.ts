@@ -136,9 +136,14 @@ function calculateSingleEliminationRanks(roundsAndMatches: Array<Array<Match>>):
 function fillTemporarySingleEliminationMatches(tournament:Tournament): Array<Array<Match>>{
     const maxRounds = getLog2(tournament.players.length);   // 3
     let roundId = tournament.roundsAndMatches.length;      // 1
+    let filledMatches:Array<Array<Match>>  = [];
+
+    tournament.roundsAndMatches.forEach(round => {
+        filledMatches.push(round);
+    })
 
     while (roundId < maxRounds) {
-        tournament.roundsAndMatches.push([])
+        filledMatches.push([])
 
         let matchCount = tournament.roundsAndMatches[roundId - 1].length / 2; // 2 // 1
 
@@ -160,12 +165,12 @@ function fillTemporarySingleEliminationMatches(tournament:Tournament): Array<Arr
                 semiFinal: false,
                 littleFinal: false
                 } as Match;
-            tournament.roundsAndMatches[roundId].push(emptyMatch);
+            filledMatches[roundId].push(emptyMatch);
         }
         roundId++;
     }
 
-    return(tournament.roundsAndMatches);
+    return(filledMatches);
 }
 
 

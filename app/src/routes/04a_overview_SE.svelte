@@ -2,8 +2,6 @@
     import type { Tournament} from '$lib/types/tournament';
     import {changePlayerPointsForMatch} from '$lib/types/tournament';
 
-    import { fillTemporaryMatches } from '$lib/calculateMatches';
-
     import CrownIcon from '@iconify-svelte/material-symbols/crown';
 
     interface Props {
@@ -23,13 +21,10 @@
         }
         return(result);
     }
-
-    let filledRoundsMatches = fillTemporaryMatches(tournament)
-    console.log(filledRoundsMatches)
 </script>
 
 <div class="rounds-wrapper">
-    {#each filledRoundsMatches as round, roundId (roundId) }
+    {#each tournament.roundsAndMatches as round, roundId (roundId) }
     <div class="matches-wrapper">
 
         {#if round[0].final}
@@ -45,36 +40,32 @@
         {/each}
         {#each round as match, matchId (matchId) }
             <div 
-                class="match {matchId % 2 == 0 && roundId != filledRoundsMatches.length - 1?"before-line-down":""} {roundId > 0?"after-line-left":""}"
+                class="match {matchId % 2 == 0 && roundId != tournament.roundsAndMatches.length - 1?"before-line-down":""} {roundId > 0?"after-line-left":""}"
                 style="--height: {(calculateFillBlocks(roundId+1)) * 90}px;"
                 >
                 <div class="match-element with-icon">
                     <div>{match.player1?.name}</div>
-                    <!-- <div class="{match.winnerId == 1?"crown":"crown-hidden"}">
+                    <div class="{match.winnerId == 1?"crown":"crown-hidden"}">
                         <CrownIcon height="1rem" color="currentcolor"/>
-                    </div> -->
-                    {#if match.winnerId == 1}
-                    {console.log(match)}
-                        <div class="crown">
-                            <CrownIcon height="1rem" color="currentcolor"/>
-                        </div>
-                    {/if}
-                </div>
-                <!-- <div class="match-element"><div>{match.player1Points}</div></div> -->
-                    <div class="match-element">
-                        <!-- svelte-ignore binding_property_non_reactive -->
-                        <input 
-                            type="{tournament.round == roundId && tournament.ranks.length == 0 ? "number" : "text"}" 
-                            bind:value={match.player1Points}
-                            onchange={(event) => {updateTournament(changePlayerPointsForMatch(tournament, roundId, matchId, 1 ,Number((event.currentTarget as HTMLInputElement).value)))}} 
-                            disabled={tournament.round == roundId && tournament.ranks.length == 0 ? false : true}
-                        >
-                        
                     </div>
+                </div>
+                <div class="match-element">
+                    <!-- svelte-ignore binding_property_non_reactive -->
+                    <input 
+                        type="{tournament.round == roundId && tournament.ranks.length == 0 ? "number" : "text"}" 
+                        bind:value={match.player1Points}
+                        onchange={(event) => {updateTournament(changePlayerPointsForMatch(tournament, roundId, matchId, 1 ,Number((event.currentTarget as HTMLInputElement).value)))}} 
+                        disabled={tournament.round == roundId && tournament.ranks.length == 0 ? false : true}
+                    >
+                </div>
 
-                <div class="match-element"><div>{match.player2?.name}</div></div>
-                <!-- <div class="match-element"><div>{match.player2Points}</div></div> -->
-                <div class="match-element with-icon">
+                <div class="match-element  with-icon">
+                    <div>{match.player2?.name}</div>
+                    <div class="{match.winnerId == 2?"crown":"crown-hidden"}">
+                        <CrownIcon height="1rem" color="currentcolor"/>
+                    </div>
+                </div>
+                <div class="match-element">
                     <!-- svelte-ignore binding_property_non_reactive -->
                     <input 
                         type="{tournament.round == roundId && tournament.ranks.length == 0 ? "number" : "text"}" 
@@ -84,7 +75,7 @@
                     >
                 </div>
             </div>
-            <!-- {#each Array((roundId * 2) + 1) as e, i (i)} -->
+            <!-- add placeholder between matches -->
             {#each Array(calculateFillBlocks(roundId + 1)) as e, i (i)}
                 <div class="match" ></div>
             {/each}
@@ -104,8 +95,6 @@
 .matches-wrapper{
     display: flex;
     flex-direction: column;
-    /* gap: 40px;
-    margin: 40px; */
 }
 
 .match{
@@ -115,16 +104,8 @@
     position: relative;
 }
 
-/* .matches-wrapper .match:first-child{
-    margin-top: auto;
-}
-
-.matches-wrapper .match:last-child{
-    margin-bottom: auto;
-} */
 
 .match-element{
-    /* height: 25px; */
     border-style: solid;
     border-width: 2px 2px 2px 2px;
     border-color: light-dark(var(--light-highlight), var(--dark-highlight));
@@ -173,7 +154,6 @@
     position: absolute;
     top: 90px;
     left: 224px;
-    /* height: 46px; */
     height: var(--height);
     border-width: 0 0 0 3px;
     border-style: solid;
@@ -192,10 +172,14 @@
 }
 
 .crown{
-
+    display: block;
 }
 
 .crown-hidden{
     display: none;
+}
+
+h3{
+    margin: 0 0 40px 0;
 }
 </style>

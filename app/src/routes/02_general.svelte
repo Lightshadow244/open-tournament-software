@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { Tournament } from '$lib/types/tournament';
 
-import { getLog2 } from '$lib/calculateMatches';
+import { getLog2, calculateMatches } from '$lib/calculateMatches';
 
 import RemoveRoundedIcon from '@iconify-svelte/material-symbols/remove-rounded';
 import Add2Icon from '@iconify-svelte/material-symbols/add-2';
@@ -40,7 +40,8 @@ function saveAndStartTournament(){
     if (tournament.mode === "Single Elimination") {
         // if (tournament.players.length % 4 == 0) {
         if (Number.isInteger(getLog2(tournament.players.length))) {
-           updateTournament(tournament, false, true); 
+            tournament.roundsAndMatches = calculateMatches(tournament);
+            updateTournament(tournament, false, false, true); 
         }else{
             triggerToast("Single Elimination needs playercount: 2, 4, 8, 16 ,32,...", "error")
         }

@@ -3,7 +3,7 @@
     import {changePlayerPointsForMatch} from '$lib/types/tournament';
 
     import { fade } from 'svelte/transition';
-    import { calculateMatches, calculateRanks } from '$lib/calculateMatches';
+    import { fillNextRound, calculateRanks } from '$lib/calculateMatches';
 
     import Podium from "./Podium.svelte"
 
@@ -18,55 +18,23 @@
         }
     let { tournament, updateTournament, triggerToast }: Props = $props();
 
-    // function changePlayerPoints(roundId:number, matchId:number, playerId:number, points:number){
-    //     if (tournament.roundsAndMatches != null) {
-    //         // add points
-    //         if (playerId == 1) {
-    //             tournament.roundsAndMatches[roundId][matchId].player1Points = points;
-    //         }else if(playerId == 2){
-    //             tournament.roundsAndMatches[roundId][matchId].player2Points = points;
-    //         }
-
-    //         //change winner
-    //         if (tournament.roundsAndMatches[roundId][matchId].player1Points == tournament.roundsAndMatches[roundId][matchId].player2Points) {
-    //             tournament.roundsAndMatches[roundId][matchId].winner = null;
-    //             tournament.roundsAndMatches[roundId][matchId].loser = null
-    //             tournament.roundsAndMatches[roundId][matchId].winnerId = 0;
-    //         }else if (tournament.roundsAndMatches[roundId][matchId].player1Points > tournament.roundsAndMatches[roundId][matchId].player2Points) {
-    //             tournament.roundsAndMatches[roundId][matchId].winner = tournament.roundsAndMatches[roundId][matchId].player1
-    //             tournament.roundsAndMatches[roundId][matchId].loser = tournament.roundsAndMatches[roundId][matchId].player2
-    //             tournament.roundsAndMatches[roundId][matchId].winnerId = 1;
-    //         }else if (tournament.roundsAndMatches[roundId][matchId].player1Points < tournament.roundsAndMatches[roundId][matchId].player2Points) {
-    //             tournament.roundsAndMatches[roundId][matchId].winner = tournament.roundsAndMatches[roundId][matchId].player2
-    //             tournament.roundsAndMatches[roundId][matchId].loser = tournament.roundsAndMatches[roundId][matchId].player1
-    //             tournament.roundsAndMatches[roundId][matchId].winnerId = 2;
-    //         }
-    //         updateTournament(tournament); 
-    //     }
-    // }
-
     function nextRound(){
         if (tournament.roundsAndMatches != null) {
             let roundsAndMatchesHaveWinner = true;
-            tournament.roundsAndMatches.forEach(round => {
-                round.forEach(match => {
-                    if (match.winner == null) {
-                        roundsAndMatchesHaveWinner = false;
-                    }
-                })
+            tournament.roundsAndMatches[tournament.round].forEach(match => {
+                if (match.winner == null) {
+                    roundsAndMatchesHaveWinner = false;
+                }
             });
 
             if (roundsAndMatchesHaveWinner) {
-                
+                tournament.roundsAndMatches = fillNextRound(tournament);
                 tournament.round++;
-                tournament.roundsAndMatches = calculateMatches(tournament.mode, tournament.players, tournament.roundsAndMatches);
-                
-                updateTournament(tournament); 
-                
-                 
+                console.log(tournament)
+                updateTournament(tournament);
             }else{
                 triggerToast("There are roundsAndMatches without a winner!", "error");
-            }               
+            } 
         }
     }
 
@@ -84,10 +52,10 @@
     }
 
     // svelte-ignore state_referenced_locally
-    if (tournament.status === "initializing") {
-        tournament.roundsAndMatches = calculateMatches(tournament.mode, tournament.players, tournament.roundsAndMatches);
-        updateTournament(tournament, false, false, true);
-    }
+    // if (tournament.status === "initializing") {
+    //     tournament.roundsAndMatches = calculateMatches(tournament.mode, tournament.players, tournament.roundsAndMatches);
+    //     updateTournament(tournament, false, false, true);
+    // }
     // }else if (tournament.status === "running"){
     //     console.log("running")
     //     console.log(tournament)
@@ -151,7 +119,8 @@
                 </div>
             </div>    
             {/each}
-            {#if tournament.round == roundId && tournament.roundsAndMatches[tournament.roundsAndMatches.length - 1][0].nextMatchId != -1}
+            <!-- {#if tournament.round == roundId && tournament.roundsAndMatches[tournament.roundsAndMatches.length - 1][0].nextMatchId != -1} -->
+            {#if tournament.round == roundId && tournament.round != tournament.roundsAndMatches.length - 1}
                 <div>
                     <button class="ots-button ots-button-success" onclick={() => nextRound()}>Next Round</button>
                 </div>
@@ -160,7 +129,7 @@
         </div>
         {/if}
     {/each}
-    {#if tournament.roundsAndMatches[tournament.roundsAndMatches.length - 1][0].final && tournament.ranks.length == 0}
+    {#if tournament.round == tournament.roundsAndMatches.length - 1 && tournament.ranks.length == 0}
         <div>
             <button class="ots-button ots-button-success" onclick={() => finish()}>Finish</button>
         </div>

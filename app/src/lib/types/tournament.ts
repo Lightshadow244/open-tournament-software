@@ -21,6 +21,7 @@ export type Player = {
     id: number
     name: string
     icon: string
+    iconColor: string
 }
 
 export type Match = {

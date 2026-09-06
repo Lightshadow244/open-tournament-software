@@ -5,6 +5,7 @@
     import { fade } from 'svelte/transition';
     import { fillNextRound, calculateRanks } from '$lib/calculateMatches';
 
+    import PlayerIcon from './PlayerIcon.svelte';
     import Podium from "./Podium.svelte"
 
     import CrownIcon from '@iconify-svelte/material-symbols/crown';
@@ -81,9 +82,13 @@
 
                 <div class="player-wrapper">
                     <div>
-                        <div class="player-name">
-                            {match.player1?.name}
+                        <div class="player-info">
+                            <div class="player-name">
+                                {match.player1?.name}
+                            </div>
+                            <PlayerIcon player={<Player>match.player1}/>
                         </div>
+                        
                         <div class="player-counter">
                             <!-- svelte-ignore binding_property_non_reactive -->
                             <input 
@@ -103,8 +108,11 @@
                     </div>
 
                     <div>
-                        <div  class="player-name">
-                            {match.player2?.name}
+                        <div class="player-info">
+                            <div class="player-name">
+                                {match.player2?.name}
+                            </div>
+                            <PlayerIcon player={<Player>match.player2}/>
                         </div>
                         <div class="player-counter">
                             <!-- svelte-ignore binding_property_non_reactive -->
@@ -184,9 +192,14 @@
         margin: 0 auto 0 auto;
         position:relative;
     }
+    .player-info{
+        display:flex;
+        align-items: center;
+    }
 
     .player-name{
         text-align: center;
+        margin-right: 5px;
     }
 
     .player-points{

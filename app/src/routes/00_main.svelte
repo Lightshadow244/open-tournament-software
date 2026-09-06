@@ -53,7 +53,11 @@
             time                 : dateString.split("T")[1].split("Z")[0].substring(0, 5),
             modified             : dateString,
             location             : "",
-            players              : [{id: 0, name:"Player 1", icon: "empty"},{id: 1, name:"Player 2", icon: "empty"},{id: 2, name:"Player 3", icon: "empty"},{id: 3, name:"Player 4", icon: "empty"}],
+            players              : [
+                {id: 0, name:"Player 1", icon: "diamond", iconColor: "#ffffff"},
+                {id: 1, name:"Player 2", icon: "diamond", iconColor: "#CD1F13"},
+                {id: 2, name:"Player 3", icon: "diamond", iconColor: "#ffffff"},
+                {id: 3, name:"Player 4", icon: "diamond", iconColor: "#ffffff"}],
             roundsAndMatches     : [],
             round                : 0,
             ranks               : []

@@ -1,6 +1,8 @@
 <script lang="ts">
-    import type { Tournament} from '$lib/types/tournament';
+    import type { Tournament, Player} from '$lib/types/tournament';
     import {changePlayerPointsForMatch} from '$lib/types/tournament';
+
+    import PlayerIcon from './PlayerIcon.svelte';
 
     import CrownIcon from '@iconify-svelte/material-symbols/crown';
 
@@ -35,16 +37,28 @@
             <h3 class="round-title">Round {roundId + 1}</h3>
         {/if}
         
-        {#each Array(calculateFillBlocks(roundId)) as e, i (i)}
-            <div class="match" ></div>
-        {/each}
+        <!-- add placeholder before matches -->
+        <!-- when only 2 rounds different behaviour for final match -->
+        {#if !tournament.roundsAndMatches[roundId][0].final || tournament.roundsAndMatches.length == 2}
+            {#each Array(calculateFillBlocks(roundId)) as e, i (i)}
+                <div class="match" ></div>
+            {/each}
+        {:else}
+            {#each Array(calculateFillBlocks(roundId) -1) as e, i (i)}
+                <div class="match" ></div>
+            {/each}
+        {/if}
+        
         {#each round as match, matchId (matchId) }
             <div 
+                // every even match and not last match > line down
+                // not first and not last match > line left
                 class="match {matchId % 2 == 0 && roundId != tournament.roundsAndMatches.length - 1?"before-line-down":""} {roundId > 0?"after-line-left":""}"
-                style="--height: {(calculateFillBlocks(roundId+1)) * 90}px;"
+                style="--height: {tournament.roundsAndMatches.length > 2?(calculateFillBlocks(roundId+1)) * 90:(calculateFillBlocks(roundId+1)) * 180}px;"
                 >
                 <div class="match-element with-icon">
                     <div>{match.player1?.name}</div>
+                    <PlayerIcon player={<Player>match.player1}/>
                     <div class="{match.winnerId == 1?"crown":"crown-hidden"}">
                         <CrownIcon height="1rem" color="currentcolor"/>
                     </div>
@@ -61,6 +75,7 @@
 
                 <div class="match-element  with-icon">
                     <div>{match.player2?.name}</div>
+                    <PlayerIcon player={<Player>match.player2}/>
                     <div class="{match.winnerId == 2?"crown":"crown-hidden"}">
                         <CrownIcon height="1rem" color="currentcolor"/>
                     </div>
@@ -76,9 +91,24 @@
                 </div>
             </div>
             <!-- add placeholder between matches -->
-            {#each Array(calculateFillBlocks(roundId + 1)) as e, i (i)}
-                <div class="match" ></div>
-            {/each}
+            <!-- when final add only one placeholder, but when only 2 rounds add zero placeholder for final -->
+            {#if !tournament.roundsAndMatches[roundId][0].final}
+                {#if tournament.roundsAndMatches.length > 2}
+                    {#each Array(calculateFillBlocks(roundId + 1)) as e, i (i)}
+                        <div class="match" ></div>
+                    {/each}
+                {:else}
+                    {#each Array(calculateFillBlocks(roundId + 1) * 2) as e, i (i)}
+                        <div class="match" ></div>
+                    {/each}
+                {/if}
+            {:else}
+                {#if tournament.roundsAndMatches.length > 2}
+                    <div class="match" ></div>
+                {/if}
+                
+            {/if}
+            
         {/each}
     </div>
     
@@ -112,7 +142,8 @@
 }
 
 .with-icon{
-    display:flex
+    display:flex;
+    align-items: center;
 }
 
 .match-element div{

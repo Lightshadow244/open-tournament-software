@@ -3,6 +3,7 @@
     
     import { resolve } from '$app/paths';
     import { updateTournaments, loadTournaments} from '$lib/db';
+    import { randomColor, randomIcon } from '$lib/util';
 
     import SelectionView from "./01_selection.svelte";
     import GeneralView from './02_general.svelte';
@@ -54,10 +55,10 @@
             modified             : dateString,
             location             : "",
             players              : [
-                {id: 0, name:"Player 1", icon: "diamond", iconColor: "#ffffff", changeIcon: false},
-                {id: 1, name:"Player 2", icon: "diamond", iconColor: "#CD1F13", changeIcon: false},
-                {id: 2, name:"Player 3", icon: "diamond", iconColor: "#ffffff", changeIcon: false},
-                {id: 3, name:"Player 4", icon: "diamond", iconColor: "#ffffff", changeIcon: false}],
+                {id: 0, name:"Player 1", icon: randomIcon(), iconColor: randomColor(), changeIcon: false},
+                {id: 1, name:"Player 2", icon: randomIcon(), iconColor: randomColor(), changeIcon: false},
+                {id: 2, name:"Player 3", icon: randomIcon(), iconColor: randomColor(), changeIcon: false},
+                {id: 3, name:"Player 4", icon: randomIcon(), iconColor: randomColor(), changeIcon: false}],
             roundsAndMatches     : [],
             round                : 0,
             ranks               : []

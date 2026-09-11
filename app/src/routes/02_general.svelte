@@ -1,69 +1,72 @@
 <script lang="ts">
-import type { Tournament, Player } from '$lib/types/tournament';
+    import type { Tournament, Player } from '$lib/types/tournament';
 
-import { getLog2, calculateMatches } from '$lib/calculateMatches';
+    import { getLog2, calculateMatches } from '$lib/calculateMatches';
+    import { randomIcon, randomColor } from '$lib/util';
 
-import PlayerIcon from './PlayerIcon.svelte';
-import IconSelector from './IconSelector.svelte';
+    import PlayerIcon from './PlayerIcon.svelte';
+    import IconSelector from './IconSelector.svelte';
 
-import RemoveRoundedIcon from '@iconify-svelte/material-symbols/remove-rounded';
-import Add2Icon from '@iconify-svelte/material-symbols/add-2';
+    import RemoveRoundedIcon from '@iconify-svelte/material-symbols/remove-rounded';
+    import Add2Icon from '@iconify-svelte/material-symbols/add-2';
 
 
-interface Props {
-		tournament: Tournament;
-        deleteTournament(id: string): void;
-        updateTournament(tt: Tournament, configuring?:boolean, initializing?:boolean, running?:boolean): void;
-        triggerToast(msg:string, level:string): void;
-	}
+    interface Props {
+            tournament: Tournament;
+            deleteTournament(id: string): void;
+            updateTournament(tt: Tournament, configuring?:boolean, initializing?:boolean, running?:boolean): void;
+            triggerToast(msg:string, level:string): void;
+        }
 
-let { tournament, deleteTournament, updateTournament, triggerToast }: Props = $props();
+    let { tournament, deleteTournament, updateTournament, triggerToast }: Props = $props();
 
-function addPlayerToTournament(){
-    tournament.players?.push({id: tournament.players.length,name:"Player " + (tournament.players.length + 1), icon: "diamond", iconColor: "#ffffff", changeIcon: false})
-    updateTournament(tournament);
+    function addPlayerToTournament(){
+        tournament.players?.push({id: tournament.players.length,name:"Player " + (tournament.players.length + 1), icon: randomIcon(), iconColor: randomColor(), changeIcon: false})
+        updateTournament(tournament);
 
-    tournament.players.forEach((player, index) => {
-        player.id=index;
-    });
-}
+        tournament.players.forEach((player, index) => {
+            player.id=index;
+        });
+    }
 
-function removePlayerFromTournament(playerId:number){
-    if (tournament.players.length > 0) {
-        tournament.players.splice(playerId, 1);
+    function removePlayerFromTournament(playerId:number){
+        if (tournament.players.length > 0) {
+            tournament.players.splice(playerId, 1);
+            updateTournament(tournament);
+        }
+
+        tournament.players.forEach((player, index) => {
+            player.id=index;
+        });
+    }
+
+    function saveAndStartTournament(){
+        if (tournament.mode === "Single Elimination") {
+            // if (tournament.players.length % 4 == 0) {
+            if (Number.isInteger(getLog2(tournament.players.length))) {
+                tournament.roundsAndMatches = calculateMatches(tournament);
+                updateTournament(tournament, false, false, true); 
+            }else{
+                triggerToast("Single Elimination needs playercount: 2, 4, 8, 16 ,32,...", "error")
+            }
+        }
+    }
+
+    function activateIconSelector(player:Player){
+        tournament.players.forEach(p => {
+            p.changeIcon = false;
+        })
+
+        player.changeIcon = true;
         updateTournament(tournament);
     }
 
-    tournament.players.forEach((player, index) => {
-        player.id=index;
-    });
-}
-
-function saveAndStartTournament(){
-    if (tournament.mode === "Single Elimination") {
-        // if (tournament.players.length % 4 == 0) {
-        if (Number.isInteger(getLog2(tournament.players.length))) {
-            tournament.roundsAndMatches = calculateMatches(tournament);
-            updateTournament(tournament, false, false, true); 
-        }else{
-            triggerToast("Single Elimination needs playercount: 2, 4, 8, 16 ,32,...", "error")
-        }
+    function closeIconSelector(player: Player){
+        player.changeIcon = false;
+        console.log(player);
+        console.log(tournament.players[0]);
+        updateTournament(tournament);
     }
-}
-
-function activateIconSelector(player:Player){
-    tournament.players.forEach(p => {
-        p.changeIcon = false;
-    })
-
-    player.changeIcon = true;
-    updateTournament(tournament);
-}
-
-function closeIconSelector(player: Player){
-    player.changeIcon = false;
-    updateTournament(tournament);
-}
 
 </script>
 
@@ -154,9 +157,13 @@ function closeIconSelector(player: Player){
                 <!-- svelte-ignore binding_property_non_reactive -->
                 <!-- <td><input class="{tournament.status === "configuring" ? "" : "mode-disabled"}" type="text" bind:value={p.icon} disabled={tournament.status === "configuring" ? false : true}></td> -->
                  <td class="icon-cell">
-                    <button class="ots-button" onclick={() => activateIconSelector(p)}>
+                    {#if tournament.status === "configuring"}
+                        <button class="ots-button" onclick={() => activateIconSelector(p)}>
+                            <PlayerIcon player={p}/>
+                        </button>
+                    {:else}
                         <PlayerIcon player={p}/>
-                    </button>
+                    {/if}
                     {#if p.changeIcon}
                         <IconSelector close={closeIconSelector} player={p} tournament={tournament} updateTournament={updateTournament}/>
                     {/if}
@@ -324,7 +331,7 @@ function closeIconSelector(player: Player){
     .participants-table th,
     .participants-table td {
         padding: 5px 5px;
-        height: 25px;
+        height: 30px;
     }
 
     .participants-table tbody tr {

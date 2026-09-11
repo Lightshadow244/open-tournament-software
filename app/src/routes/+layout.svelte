@@ -15,13 +15,16 @@
     
 
   	--light: #ffffff;
+	--light-border: #EDEDED;
 	--light-secondary: #ebebeb;
 	--light-highlight: #dbdbdb;
 	--light-hover: #c1c1c1;
 	--light-text: #4c4c4c;
 	--light-disabled: #75747a;
+	
 
 	--dark: #1c1e22;
+	--dark-border: #262A32;
 	--dark-secondary: #23272f;
 	--dark-highlight: #303541;
 	--dark-hover: #404757;

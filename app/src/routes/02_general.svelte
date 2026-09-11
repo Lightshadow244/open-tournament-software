@@ -1,9 +1,10 @@
 <script lang="ts">
-import type { Tournament } from '$lib/types/tournament';
+import type { Tournament, Player } from '$lib/types/tournament';
 
 import { getLog2, calculateMatches } from '$lib/calculateMatches';
 
 import PlayerIcon from './PlayerIcon.svelte';
+import IconSelector from './IconSelector.svelte';
 
 import RemoveRoundedIcon from '@iconify-svelte/material-symbols/remove-rounded';
 import Add2Icon from '@iconify-svelte/material-symbols/add-2';
@@ -19,7 +20,7 @@ interface Props {
 let { tournament, deleteTournament, updateTournament, triggerToast }: Props = $props();
 
 function addPlayerToTournament(){
-    tournament.players?.push({id: tournament.players.length,name:"Player " + (tournament.players.length + 1), icon: "diamond", iconColor: "#ffffff"})
+    tournament.players?.push({id: tournament.players.length,name:"Player " + (tournament.players.length + 1), icon: "diamond", iconColor: "#ffffff", changeIcon: false})
     updateTournament(tournament);
 
     tournament.players.forEach((player, index) => {
@@ -48,6 +49,20 @@ function saveAndStartTournament(){
             triggerToast("Single Elimination needs playercount: 2, 4, 8, 16 ,32,...", "error")
         }
     }
+}
+
+function activateIconSelector(player:Player){
+    tournament.players.forEach(p => {
+        p.changeIcon = false;
+    })
+
+    player.changeIcon = true;
+    updateTournament(tournament);
+}
+
+function closeIconSelector(player: Player){
+    player.changeIcon = false;
+    updateTournament(tournament);
 }
 
 </script>
@@ -138,7 +153,14 @@ function saveAndStartTournament(){
                 <td><input class="{tournament.status === "configuring" ? "" : "mode-disabled"}" type="text" bind:value={p.name} disabled={tournament.status === "configuring" ? false : true}></td>
                 <!-- svelte-ignore binding_property_non_reactive -->
                 <!-- <td><input class="{tournament.status === "configuring" ? "" : "mode-disabled"}" type="text" bind:value={p.icon} disabled={tournament.status === "configuring" ? false : true}></td> -->
-                 <td><PlayerIcon player={p}/></td>
+                 <td class="icon-cell">
+                    <button class="ots-button" onclick={() => activateIconSelector(p)}>
+                        <PlayerIcon player={p}/>
+                    </button>
+                    {#if p.changeIcon}
+                        <IconSelector close={closeIconSelector} player={p} tournament={tournament} updateTournament={updateTournament}/>
+                    {/if}
+                </td>
                 
                 <td class="participants-table-delete">
                     {#if tournament.status === "configuring"}
@@ -385,6 +407,10 @@ function saveAndStartTournament(){
     .save-delete-wrapper button:last-child{
         /* flex-grow: 1; */
         margin-left: auto;
+    }
+
+    .icon-cell{
+        position:relative;
     }
     
 </style>

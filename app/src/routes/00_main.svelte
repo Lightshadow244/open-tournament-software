@@ -54,10 +54,10 @@
             modified             : dateString,
             location             : "",
             players              : [
-                {id: 0, name:"Player 1", icon: "diamond", iconColor: "#ffffff"},
-                {id: 1, name:"Player 2", icon: "diamond", iconColor: "#CD1F13"},
-                {id: 2, name:"Player 3", icon: "diamond", iconColor: "#ffffff"},
-                {id: 3, name:"Player 4", icon: "diamond", iconColor: "#ffffff"}],
+                {id: 0, name:"Player 1", icon: "diamond", iconColor: "#ffffff", changeIcon: false},
+                {id: 1, name:"Player 2", icon: "diamond", iconColor: "#CD1F13", changeIcon: false},
+                {id: 2, name:"Player 3", icon: "diamond", iconColor: "#ffffff", changeIcon: false},
+                {id: 3, name:"Player 4", icon: "diamond", iconColor: "#ffffff", changeIcon: false}],
             roundsAndMatches     : [],
             round                : 0,
             ranks               : []
@@ -238,8 +238,9 @@
         border-radius: 0.3rem;
         border-style: solid;
         border-width: 1px 2px 2px 1px;
-        border-color: light-dark(var(--light-highlight), var(--dark-highlight));
+        border-color: light-dark(var(--light-border), var(--dark-border));
         padding: 5px 5px 5px 5px;
+        /* padding: 0; */
         display: flex;
         align-items: center;
         justify-content: center;

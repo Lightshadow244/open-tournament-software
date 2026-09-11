@@ -22,6 +22,7 @@ export type Player = {
     name: string
     icon: string
     iconColor: string
+    changeIcon: boolean
 }
 
 export type Match = {

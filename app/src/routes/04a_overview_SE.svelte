@@ -54,16 +54,25 @@
                 // every even match and not last match > line down
                 // not first and not last match > line left
                 class="match {matchId % 2 == 0 && roundId != tournament.roundsAndMatches.length - 1?"before-line-down":""} {roundId > 0?"after-line-left":""}"
-                style="--height: {tournament.roundsAndMatches.length > 2?(calculateFillBlocks(roundId+1)) * 90:(calculateFillBlocks(roundId+1)) * 180}px;"
+                style="--height: {tournament.roundsAndMatches.length > 2?(calculateFillBlocks(roundId+1)) * 135:(calculateFillBlocks(roundId+1)) * 270}px;"
                 >
-                <div class="match-element with-icon">
+                <div class="match-element match-title">
+                    {#if match.final}
+                        <h4>Final</h4>
+                    {:else if match.littleFinal}
+                        <h4>3rd-Place</h4>
+                    {:else}
+                        <h4>Match: {matchId + 1}</h4>
+                    {/if}
+                </div>
+                <div class="match-element match-player1-name with-icon">
                     <div>{match.player1?.name}</div>
                     <PlayerIcon player={<Player>match.player1}/>
                     <div class="{match.winnerId == 1?"crown":"crown-hidden"}">
                         <CrownIcon height="1rem" color="currentcolor"/>
                     </div>
                 </div>
-                <div class="match-element">
+                <div class="match-element match-player1-points">
                     <!-- svelte-ignore binding_property_non_reactive -->
                     <input 
                         type="{tournament.round == roundId && tournament.ranks.length == 0 ? "number" : "text"}" 
@@ -73,14 +82,14 @@
                     >
                 </div>
 
-                <div class="match-element  with-icon">
+                <div class="match-element match-player2-name with-icon">
                     <div>{match.player2?.name}</div>
                     <PlayerIcon player={<Player>match.player2}/>
                     <div class="{match.winnerId == 2?"crown":"crown-hidden"}">
                         <CrownIcon height="1rem" color="currentcolor"/>
                     </div>
                 </div>
-                <div class="match-element">
+                <div class="match-element match-player2-points">
                     <!-- svelte-ignore binding_property_non_reactive -->
                     <input 
                         type="{tournament.round == roundId && tournament.ranks.length == 0 ? "number" : "text"}" 
@@ -130,8 +139,36 @@
 .match{
     display:grid;
     grid-template-columns: 200px 50px;
-    grid-template-rows: 45px 45px;
+    grid-template-rows: 45px 45px 45px;
+    grid-template-areas: 
+        "match-title match-title"
+        "match-player1-name match-player1-points"
+        "match-player2-name match-player2-points"; 
     position: relative;
+}
+
+.match-title{
+    grid-area: match-title;
+}
+
+.match-title h4 {
+    margin:0.5rem 0 0 0.5rem;
+}
+
+.match-player1-name{
+    grid-area: match-player1-name;
+}
+
+.match-player1-points{
+    grid-area: match-player1-points;
+}
+
+.match-player2-name{
+    grid-area: match-player2-name;
+}
+
+.match-player2-points{
+    grid-area: match-player2-points;
 }
 
 
@@ -167,15 +204,20 @@
 
 .match .match-element:nth-child(2){
     border-top-right-radius: 0.3rem;
-    border-width: 2px 2px 2px 0px;
+    border-width: 0px 2px 2px 2px;
 }
 
 .match .match-element:nth-child(3){
     border-bottom-left-radius: 0.3rem;
-    border-width: 0px 2px 2px 2px;
+    border-width: 0px 2px 2px 0px;
 }
 
 .match .match-element:nth-child(4){
+    border-bottom-right-radius: 0.3rem;
+    border-width: 0px 2px 2px 2px;
+}
+
+.match .match-element:nth-child(5){
     border-bottom-right-radius: 0.3rem;
     border-width: 0px 2px 2px 0px;
 }
@@ -183,7 +225,7 @@
 .before-line-down::before{
     content: "";
     position: absolute;
-    top: 90px;
+    top: 135px;
     left: 224px;
     height: var(--height);
     border-width: 0 0 0 3px;
@@ -194,7 +236,7 @@
 .after-line-left::after{
     content: "";
     position: absolute;
-    top: 43px;
+    top: 65px;
     left: -64px;
     width: 64px;
     border-width: 0 0 3px 0;

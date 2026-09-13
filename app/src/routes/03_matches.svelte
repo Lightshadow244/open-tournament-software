@@ -72,13 +72,19 @@
             {:else if round[0].semiFinal}
                 <h3 class="round-title">Semi-Final</h3>
             {:else}
-                <h3 class="round-title">Round {roundId + 1}</h3>
+                <h3 class="round-title">Round: {roundId + 1}</h3>
             {/if}
 
             {#each round as match, matchId  (matchId)}
             <div class="match-wrapper">
 
-                <h4 class="match-title">{match.name}</h4>
+                {#if match.final}
+                    <h4 class="match-title">Final</h4>
+                {:else if match.littleFinal}
+                    <h4 class="match-title">3rd-Place</h4>
+                {:else}
+                    <h4 class="match-title">Match: {matchId + 1}</h4>
+                {/if}
 
                 <div class="player-wrapper">
                     <div>
@@ -158,6 +164,7 @@
     .round-title{
         margin: 0;
     }
+
     .match-wrapper{
         
         background-color: rgba(255,255,255,0.0);

@@ -43,11 +43,11 @@
     function saveAndStartTournament(){
         if (tournament.mode === "Single Elimination") {
             // if (tournament.players.length % 4 == 0) {
-            if (Number.isInteger(getLog2(tournament.players.length))) {
+            if (Number.isInteger(getLog2(tournament.players.length)) && tournament.players.length != 2) {
                 tournament.roundsAndMatches = calculateMatches(tournament);
                 updateTournament(tournament, false, false, true); 
             }else{
-                triggerToast("Single Elimination needs playercount: 2, 4, 8, 16 ,32,...", "error")
+                triggerToast("Single Elimination needs player count: 4, 8, 16 ,32,...", "error")
             }
         }
     }

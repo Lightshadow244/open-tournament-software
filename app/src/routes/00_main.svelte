@@ -112,8 +112,10 @@
         <button class="{view == 0 ? "active":""}" onclick={() => {view=0}}>Tournaments</button>
         {#if tournamentId != ""}
             <button class="{view == 1 ? "active":""}" onclick={() => {view=1}}>General</button>
-            <button class="{view == 2 ? "active":""}" onclick={() => {view=2}}>Matches</button>
-            <button class="{view == 3 ? "active":""}" onclick={() => {view=3}}>Overview</button>
+            {#if tts[tournamentId].status === "running"}
+                <button class="{view == 2 ? "active":""}" onclick={() => {view=2}}>Matches</button>
+                <button class="{view == 3 ? "active":""}" onclick={() => {view=3}}>Overview</button>
+            {/if}
         {/if}
 
     </div>

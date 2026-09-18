@@ -6,19 +6,20 @@ All data is stored in your browser local storage.
 
 ## Features
 - Create multiple tournaments:
-  - Single elimination (planned)
+  - Single elimination
   - Double elemination (planned)
   - Round robin (planned)
   - Group stage + elimination (planned)
   - Swiss system (planned)
 - Add participants:
-  - Add name (planned)
-  - Choose icon (planned)
+  - Add name 
+  - Choose icon 
+  - Choose icon color
   - Choose strength (planned)
 - 
   
 ## Demo
-Open-tournament-software will be avaiable at github-pages.
+Open-tournament-software is avaiable at github-pages.
 
 ## Setup
 Requirements: `npm`

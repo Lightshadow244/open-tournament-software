@@ -36,6 +36,12 @@ jobs:
         run: |
           npm run build
 
+      - name: debug_01
+        run: ls
+
+      - name: debug_02
+        run: ls ./app/
+
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v5
         with:

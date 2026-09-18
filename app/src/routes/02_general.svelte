@@ -101,30 +101,35 @@
             <!-- svelte-ignore binding_property_non_reactive -->
             <input type="radio" id="singleElimination" name="mode" value="Single Elimination" bind:group={tournament.mode} disabled={tournament.status === "configuring" ? false : true}/>
             <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Single Elimination</span>
+             
         </label>
 
         <label class="mode-element" for="doubleElimination">
             <!-- svelte-ignore binding_property_non_reactive -->
             <input type="radio" id="doubleElimination" name="mode" value="Double Elimination" bind:group={tournament.mode} disabled={tournament.status === "configuring" ? false : true}/>
-            <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Double Elimination</span>
+            <!-- <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Double Elimination</span> -->
+            <span class="mode-disabled">Double Elimination (not implemented)</span>
         </label>
 
         <label class="mode-element" for="roundRobin">
             <!-- svelte-ignore binding_property_non_reactive -->
             <input type="radio" id="roundRobin" name="mode" value="Round Robin" bind:group={tournament.mode} disabled={tournament.status === "configuring" ? false : true}/>
-            <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Round Robin</span>
+            <!-- <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Round Robin</span> -->
+            <span class="mode-disabled">Round Robin (not implemented)</span>
         </label>
 
         <label class="mode-element" for="groupStageWithElimination">
             <!-- svelte-ignore binding_property_non_reactive -->
             <input type="radio" id="groupStageWithElimination" name="mode" value="Group Stage + Elimination" bind:group={tournament.mode} disabled={tournament.status === "configuring" ? false : true}/>
-            <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Group Stage + Elimination</span>
+            <!-- <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Group Stage + Elimination</span> -->
+            <span class="mode-disabled">Group Stage + Elimination (not implemented)</span>
         </label>
 
         <label class="mode-element" for="swissSystem">
             <!-- svelte-ignore binding_property_non_reactive -->
             <input type="radio" id="swissSystem" name="mode" value="Swiss System" bind:group={tournament.mode} disabled={tournament.status === "configuring" ? false : true}/>
-            <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Swiss System</span>
+            <!-- <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Swiss System</span> -->
+            <span class="mode-disabled">Swiss System (not implemented)</span>
         </label>
     </div>
 

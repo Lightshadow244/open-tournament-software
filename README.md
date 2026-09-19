@@ -16,7 +16,6 @@ All data is stored in your browser local storage.
   - Choose icon 
   - Choose icon color
   - Choose strength (planned)
-- 
   
 ## Demo
 Open-tournament-software is avaiable at github-pages.

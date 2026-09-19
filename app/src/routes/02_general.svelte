@@ -49,6 +49,13 @@
             }else{
                 triggerToast("Single Elimination needs player count: 4, 8, 16 ,32,...", "error")
             }
+        }else if(tournament.mode === "Round Robin"){
+            if (tournament.players.length > 2){
+                tournament.roundsAndMatches = calculateMatches(tournament);
+                updateTournament(tournament, false, false, true); 
+            }else{
+                triggerToast("Round Robin needs player count greater than 2", "error")
+            }
         }
     }
 
@@ -114,8 +121,7 @@
         <label class="mode-element" for="roundRobin">
             <!-- svelte-ignore binding_property_non_reactive -->
             <input type="radio" id="roundRobin" name="mode" value="Round Robin" bind:group={tournament.mode} disabled={tournament.status === "configuring" ? false : true}/>
-            <!-- <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Round Robin</span> -->
-            <span class="mode-disabled">Round Robin (not implemented)</span>
+            <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Round Robin</span>
         </label>
 
         <label class="mode-element" for="groupStageWithElimination">

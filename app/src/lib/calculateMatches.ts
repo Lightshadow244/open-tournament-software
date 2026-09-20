@@ -172,7 +172,6 @@ function calculateRRMatches(tournament:Tournament):Array<Array<Match>>{
         // when not ok, returning empty array
         function addMatchToRound(round:Array<Match>, index:number):Array<Match>{
             if (round.length == maxMatches) {
-                console.log("return", round);
                 return(round)
             }else{
                 while (index < possibleCombinations.length) {

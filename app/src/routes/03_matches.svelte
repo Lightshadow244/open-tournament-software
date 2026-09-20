@@ -10,7 +10,6 @@
 
     import CrownIcon from '@iconify-svelte/material-symbols/crown';
 
-
     interface Props {
         tournament: Tournament;
 
@@ -23,7 +22,7 @@
         if (tournament.roundsAndMatches != null) {
             let roundsAndMatchesHaveWinner = true;
             tournament.roundsAndMatches[tournament.round].forEach(match => {
-                if (match.winner == null) {
+                if (match.winner == null && match.player1?.name !== "filler" && match.player2?.name !== "filler") {
                     roundsAndMatchesHaveWinner = false;
                 }
             });
@@ -31,7 +30,6 @@
             if (roundsAndMatchesHaveWinner) {
                 tournament.roundsAndMatches = fillNextRound(tournament);
                 tournament.round++;
-                console.log(tournament)
                 updateTournament(tournament);
             }else{
                 triggerToast("There are roundsAndMatches without a winner!", "error");
@@ -52,95 +50,108 @@
         
     }
 
-    // svelte-ignore state_referenced_locally
-    // if (tournament.status === "initializing") {
-    //     tournament.roundsAndMatches = calculateMatches(tournament.mode, tournament.players, tournament.roundsAndMatches);
-    //     updateTournament(tournament, false, false, true);
-    // }
-    // }else if (tournament.status === "running"){
-    //     console.log("running")
-    //     console.log(tournament)
-    // }
+    	$effect(() => {
+            console.log("scroll");
+            location.hash = "#" + "round-" + tournament.round;
+        })
 </script>
+
 {#if tournament.status === "running"}
     {#each tournament.roundsAndMatches as round, roundId (roundId)}
-        {#if round[0].player1?.name != null && round[0].player2?.name != null}
-        <div class="round-wrapper" transition:fade>
-            
-            {#if round[0].final}
-                <h3 class="round-title">Final</h3>
-            {:else if round[0].semiFinal}
-                <h3 class="round-title">Semi-Final</h3>
-            {:else}
-                <h3 class="round-title">Round: {roundId + 1}</h3>
-            {/if}
-
-            {#each round as match, matchId  (matchId)}
-            <div class="match-wrapper">
-
-                {#if match.final}
-                    <h4 class="match-title">Final</h4>
-                {:else if match.littleFinal}
-                    <h4 class="match-title">3rd-Place</h4>
+        {#if roundId <= tournament.round}
+            <div class="round-wrapper" id="round-{roundId}" transition:fade>
+                
+                {#if round[0].final}
+                    <h3 class="round-title">Final</h3>
+                {:else if round[0].semiFinal}
+                    <h3 class="round-title">Semi-Final</h3>
                 {:else}
-                    <h4 class="match-title">Match: {matchId + 1}</h4>
+                    <h3 class="round-title">Round: {roundId + 1}</h3>
                 {/if}
 
-                <div class="player-wrapper">
-                    <div>
-                        <div class="player-info">
-                            <div class="player-name">
-                                {match.player1?.name}
-                            </div>
-                            <PlayerIcon player={<Player>match.player1}/>
-                        </div>
-                        
-                        <div class="player-counter">
-                            <!-- svelte-ignore binding_property_non_reactive -->
-                            <input 
-                                class="player-points" 
-                                type="{tournament.round == roundId && tournament.ranks.length == 0 ? "number" : "text"}" 
-                                bind:value={match.player1Points}
-                                onchange={(event) => {updateTournament(changePlayerPointsForMatch(tournament, roundId, matchId, 1 ,Number((event.currentTarget as HTMLInputElement).value)))}} 
-                                disabled={tournament.round == roundId && tournament.ranks.length == 0 ? false : true}>
-                        </div>
-                    </div>
+                <!-- list matches without a filler player -->
+                {#each round as match, matchId  (matchId)}
+                    {#if match.player1?.name !== "filler" && match.player2?.name !== "filler"}
+                        <div class="match-wrapper">
 
-                    <div class="vs">
-                        vs
-                         <div class="test-crown-wrapper {match.winner == null?"test-crown-wrapper-up":""} {match.winnerId == 1?"test-crown-wrapper-left":""} {match.winnerId == 2?"test-crown-wrapper-right":""}">
-                            <CrownIcon height="1rem" color="currentcolor"/>
-                        </div>
-                    </div>
+                            {#if match.final}
+                                <h4 class="match-title">Final</h4>
+                            {:else if match.littleFinal}
+                                <h4 class="match-title">3rd-Place</h4>
+                            {:else}
+                                <h4 class="match-title">Match: {matchId + 1}</h4>
+                            {/if}
 
-                    <div>
-                        <div class="player-info">
-                            <div class="player-name">
-                                {match.player2?.name}
+                            <div class="player-wrapper">
+                                <div>
+                                    <div class="player-info">
+                                        <div class="player-name">
+                                            {match.player1?.name}
+                                        </div>
+                                        <PlayerIcon player={<Player>match.player1}/>
+                                    </div>
+                                    
+                                    <div class="player-counter">
+                                        <!-- svelte-ignore binding_property_non_reactive -->
+                                        <input 
+                                            class="player-points" 
+                                            type="{tournament.round == roundId && tournament.ranks.length == 0 ? "number" : "text"}" 
+                                            bind:value={match.player1Points}
+                                            onchange={(event) => {updateTournament(changePlayerPointsForMatch(tournament, roundId, matchId, 1 ,Number((event.currentTarget as HTMLInputElement).value)))}} 
+                                            disabled={tournament.round == roundId && tournament.ranks.length == 0 ? false : true}>
+                                    </div>
+                                </div>
+
+                                <div class="vs">
+                                    vs
+                                    <div class="test-crown-wrapper {match.winner == null?"test-crown-wrapper-up":""} {match.winnerId == 1?"test-crown-wrapper-left":""} {match.winnerId == 2?"test-crown-wrapper-right":""}">
+                                        <CrownIcon height="1rem" color="currentcolor"/>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="player-info">
+                                        <div class="player-name">
+                                            {match.player2?.name}
+                                        </div>
+                                        <PlayerIcon player={<Player>match.player2}/>
+                                    </div>
+                                    <div class="player-counter">
+                                        <!-- svelte-ignore binding_property_non_reactive -->
+                                        <input 
+                                            class="player-points" 
+                                            type="{tournament.round == roundId && tournament.ranks.length == 0 ? "number" : "text"}" 
+                                            bind:value={match.player2Points}
+                                            onchange={(event) => {updateTournament(changePlayerPointsForMatch(tournament, roundId, matchId, 2 ,Number((event.currentTarget as HTMLInputElement).value)))}} 
+                                            disabled={tournament.round == roundId && tournament.ranks.length == 0 ? false : true}>
+                                    </div>
+                                </div>
                             </div>
-                            <PlayerIcon player={<Player>match.player2}/>
+                        </div>  
+                    {/if} 
+                {/each}
+                
+                <!-- at the end list matches with a filler player -->
+                {#each round as match, matchId  (matchId)}
+                    {#if match.player1?.name === "filler" || match.player2?.name === "filler"}
+                        <div class="idle-wrapper">
+                            <div class="match-wrapper ">
+                                <h4 class="idle-title">Idle</h4>
+                                <div class="idle-player">
+                                    {match.player1?.name === "filler"?match.player2?.name:match.player1?.name}
+                                </div>
+                            </div>
                         </div>
-                        <div class="player-counter">
-                            <!-- svelte-ignore binding_property_non_reactive -->
-                            <input 
-                                class="player-points" 
-                                type="{tournament.round == roundId && tournament.ranks.length == 0 ? "number" : "text"}" 
-                                bind:value={match.player2Points}
-                                onchange={(event) => {updateTournament(changePlayerPointsForMatch(tournament, roundId, matchId, 2 ,Number((event.currentTarget as HTMLInputElement).value)))}} 
-                                disabled={tournament.round == roundId && tournament.ranks.length == 0 ? false : true}>
-                        </div>
+                    {/if}
+                {/each}
+                <!-- {#if tournament.round == roundId && tournament.roundsAndMatches[tournament.roundsAndMatches.length - 1][0].nextMatchId != -1} -->
+                {#if tournament.round == roundId && tournament.round != tournament.roundsAndMatches.length - 1}
+                    <div>
+                        <button class="ots-button ots-button-success" onclick={() => nextRound()}>Next Round</button>
                     </div>
-                </div>
-            </div>    
-            {/each}
-            <!-- {#if tournament.round == roundId && tournament.roundsAndMatches[tournament.roundsAndMatches.length - 1][0].nextMatchId != -1} -->
-            {#if tournament.round == roundId && tournament.round != tournament.roundsAndMatches.length - 1}
-                <div>
-                    <button class="ots-button ots-button-success" onclick={() => nextRound()}>Next Round</button>
-                </div>
-            {/if }
-            
-        </div>
+                {/if }
+                
+            </div>
         {/if}
     {/each}
     {#if tournament.round == tournament.roundsAndMatches.length - 1 && tournament.ranks.length == 0}
@@ -160,6 +171,7 @@
         flex-direction: column;
         gap: 20px;
         margin-bottom: 3rem;
+        scroll-margin-top: 4rem;
     }
     .round-title{
         margin: 0;
@@ -174,6 +186,23 @@
         border-color: light-dark(var(--light-highlight), var(--dark-highlight));
         transition: all 0.3s ease;
 
+    }
+
+    .idle-wrapper{
+        display: flex;
+    }
+    .idle-wrapper .match-wrapper{
+        margin: 0 auto 0 auto;
+    }
+
+    .idle-title{
+        margin: 1rem 3rem 1rem 3rem;
+        text-align: center;
+    }
+
+    .idle-player{
+        margin: 0 3rem 1rem 3rem;
+        text-align: center;
     }
 
     .match-title{
@@ -251,4 +280,6 @@
         right: -1rem;
         top:0;
     }
+
+    
 </style>

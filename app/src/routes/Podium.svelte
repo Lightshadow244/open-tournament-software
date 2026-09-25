@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Tournament, Player } from '$lib/types/tournament';
+    import PlayerIcon from './PlayerIcon.svelte';
 
     interface Props {
         tournament: Tournament;
@@ -14,22 +15,59 @@
             <h1>
             1#
             </h1>
-            <div class="first-rank-name">
+            {#each tournament.ranks[0] as rank1 }
+                <div class="first-rank-name">
+                    {#if tournament.mode === "Round Robin"}
+                        <PlayerIcon player={<Player>rank1[0]}/>: {rank1[1]} wins
+                    {:else}
+                        <PlayerIcon player={<Player>rank1[0]}/>
+                    {/if}
+                    
+                </div> 
+            {/each}
+            <!-- <div class="first-rank-name">
                 {tournament.ranks[0].name}
-            </div>
+            </div> -->
         </div>
         <div class="other-ranks">
             <div>
                 <h3>2#</h3> 
-                <div>{tournament.ranks[1].name}</div>
+                <!-- <div>{tournament.ranks[1].name}</div> -->
+                 {#each tournament.ranks[1] as rank2 }
+                    <div>
+                        {#if tournament.mode === "Round Robin"}
+                            <PlayerIcon player={<Player>rank2[0]}/>: {rank2[1]} wins
+                        {:else}
+                            <PlayerIcon player={<Player>rank2[0]}/>
+                        {/if}   
+                    </div>
+                {/each}
             </div>
             <div>
                 <h3>3#</h3> 
-                <div>{tournament.ranks[2].name}</div>
+                <!-- <div>{tournament.ranks[2].name}</div> -->
+                {#each tournament.ranks[2] as rank3 }
+                    <div>
+                        {#if tournament.mode === "Round Robin"}
+                            <PlayerIcon player={<Player>rank3[0]}/>: {rank3[1]} wins
+                        {:else}
+                            <PlayerIcon player={<Player>rank3[0]}/>
+                        {/if}  
+                    </div>
+                {/each}
             </div>
             <div>
                 <h3>4#</h3> 
-                <div>{tournament.ranks[3].name}</div>
+                <!-- <div>{tournament.ranks[3].name}</div> -->
+                {#each tournament.ranks[3] as rank4 }
+                    <div>
+                        {#if tournament.mode === "Round Robin"}
+                            <PlayerIcon player={<Player>rank4[0]}/>: {rank4[1]} wins
+                        {:else}
+                            <PlayerIcon player={<Player>rank4[0]}/>
+                        {/if}  
+                    </div>
+                {/each}
             </div>
         </div>
         
@@ -70,11 +108,8 @@
         gap: 1rem;
     }
 
-    .other-ranks>div{
-        display: flex;
-    }
-
     .other-ranks>div>div{
-        margin-left: 1rem;
+        display: flex;
+        align-items: center;
     }
 </style>

@@ -13,17 +13,22 @@ export function calculateMatches(tournament:Tournament):Array<Array<Match>>{
 }
 
 export function fillNextRound(tournament: Tournament):Array<Array<Match>>{
-     if (tournament.mode === "Single Elimination") {
+    if (tournament.mode === "Single Elimination") {
         tournament.roundsAndMatches = fillNextRoundSE(tournament);
+    }else if(tournament.mode === "Round Robin"){
+        // nothing to do
     }
     return(tournament.roundsAndMatches);
 }
 
-export function calculateRanks(tournament: Tournament): Array<Player>{
-    let  ranks = <Array<Player>> [];
+export function calculateRanks(tournament: Tournament): Array<Array<[Player, number]>>{
+    let  ranks: Array<Array<[Player, number]>> = [];
     if (tournament.mode === "Single Elimination") {
-        ranks = calculateSingleEliminationRanks(tournament.roundsAndMatches);
+        ranks = calculateSERanks(tournament.roundsAndMatches, tournament.players);
+    }else if(tournament.mode === "Round Robin"){
+        ranks = calculateRRRanks(tournament.roundsAndMatches, tournament.players);
     }
+
     return(ranks);
 }
 
@@ -121,22 +126,34 @@ function fillNextRoundSE(tournament:Tournament):Array<Array<Match>>{
     return(tournament.roundsAndMatches)
 }
 
-function calculateSingleEliminationRanks(roundsAndMatches: Array<Array<Match>>):Array<Player> {
-    let  ranks = <Array<Player>>  [];
+// function calculateSERanks(roundsAndMatches: Array<Array<Match>>):Array<Player> {
+    // let  ranks = <Array<Player>>  [];
 
+    // let final = roundsAndMatches[roundsAndMatches.length - 1];
+
+    // ranks.push(<Player> final[0].winner);
+    // ranks.push(<Player> final[0].loser);
+    // ranks.push(<Player> final[1].winner);
+    // ranks.push(<Player> final[1].loser);
+
+    // return(ranks);
+function calculateSERanks(roundsAndMatches: Array<Array<Match>>, players: Array<Player>):Array<Array<[Player, number]>> {
+    let ranks: Array<Array<[Player, number]>> = [[],[],[],[]];
     let final = roundsAndMatches[roundsAndMatches.length - 1];
 
-    ranks.push(<Player> final[0].winner);
-    ranks.push(<Player> final[0].loser);
-    ranks.push(<Player> final[1].winner);
-    ranks.push(<Player> final[1].loser);
+    ranks[0].push([<Player> final[0].winner, 0])
+    ranks[1].push([<Player> final[0].loser, 0])
+    ranks[2].push([<Player> final[1].winner, 0])
+    ranks[3].push([<Player> final[1].loser, 0])
+
+    
 
     return(ranks);
 }
 
 // #endregion Single Elimination
 
-// #regin Round Robin
+// #region Round Robin
 
 function calculateRRMatches(tournament:Tournament):Array<Array<Match>>{
     let roundsAndMatches:Array<Array<Match>> = [];
@@ -224,7 +241,52 @@ function calculateRRMatches(tournament:Tournament):Array<Array<Match>>{
     return(roundsAndMatches);
 }
 
-// #endregin Round Robin
+function calculateRRRanks(roundsAndMatches: Array<Array<Match>>, players: Array<Player>):Array<Array<[Player, number]>> {
+    // count wins
+    let ranks: { [key: number]: number } = {};
+    roundsAndMatches.forEach(round => {
+        round.forEach(match => {
+            if(ranks[match.player1?.id as number] == undefined){
+                ranks[match.player1?.id as number] = 0;
+            }
+
+            if(ranks[match.player2?.id as number] == undefined){
+                ranks[match.player2?.id as number] = 0;
+            }
+
+            if (match.winner) {
+                ranks[match.winner.id] += 1;
+            }
+        })
+    })
+    // sort players after wins
+    let sortedRanks = Object.entries(ranks).sort((a, b) => b[1] - a[1]);
+
+    // 
+    let rankCounter = 0;
+    let wins = 0;
+    let finalRanks: Array<Array<[Player, number]>> = [[],[],[],[]];
+    for (let index = 0; index < sortedRanks.length; index++) {
+        const rank = sortedRanks[index];
+        if (wins == 0) {
+            finalRanks[0].push([players[parseInt(rank[0])], rank[1]])
+            wins = rank[1]
+        }else if(wins == rank[1]){
+            finalRanks[rankCounter].push([players[parseInt(rank[0])], rank[1]])
+        }else{
+            rankCounter++;
+            if (rankCounter == finalRanks.length) {
+                break;
+            }
+            finalRanks[rankCounter].push([players[parseInt(rank[0])], rank[1]])
+            wins = rank[1]
+        }
+    }
+
+    return(finalRanks);
+}
+
+// #endregion Round Robin
 
 export function getLog2(x:number) {
   return Math.log(x) / Math.log(2);

@@ -10,7 +10,7 @@ export type Tournament = {
     players: Array<Player>
     roundsAndMatches: Array<Array<Match>>
     round: number
-    ranks: Array<Player>
+    ranks: Array<Array<[Player, number]>>
 }
 
 export type Tournaments = {

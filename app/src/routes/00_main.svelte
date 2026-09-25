@@ -102,6 +102,10 @@
         navbar.style.setProperty("color-scheme", mode);
         
     }
+
+    function changeView(viewId:number){
+        view=viewId;
+    }
 </script>
 
 <nav bind:this={navbar} class="navbar">
@@ -137,7 +141,7 @@
         {#if view == 0}
             <SelectionView tournaments={$state.snapshot(tts)} createNewTournament={createNewTournament} selectTournament={selectTournament}/>
         {:else if view == 1}
-            <GeneralView tournament={$state.snapshot(tts[tournamentId])} triggerToast={triggerToast} deleteTournament={deleteTournament} updateTournament={updateTournament} />
+            <GeneralView tournament={$state.snapshot(tts[tournamentId])} triggerToast={triggerToast} deleteTournament={deleteTournament} updateTournament={updateTournament} changeView={changeView}/>
         {:else if view == 2}
             <MatchesView tournament={$state.snapshot(tts[tournamentId])} triggerToast={triggerToast} updateTournament={updateTournament}/>
         {:else if view == 3}

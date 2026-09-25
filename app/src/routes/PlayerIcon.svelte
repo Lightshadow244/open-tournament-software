@@ -33,50 +33,61 @@
 </script>
 
 {#if player}
-    {#if player.icon === "bishop"}
-        <ChessBishopIcon    height="1rem" color={player.iconColor}/> 
-    {:else if player.icon === "knight"}
-        <ChessKnightIcon    height="1rem" color={player.iconColor}/> 
-    {:else if player.icon === "pawn"}
-        <ChessPawnIcon      height="1rem" color={player.iconColor}/> 
-    {:else if player.icon === "rook"}
-        <ChessRookIcon      height="1rem" color={player.iconColor}/> 
-    {:else if player.icon === "cards"}
-        <PlayingCardsIcon   height="1rem" color={player.iconColor}/> 
+    <span>
+        <span>
+            {player.name}
+        </span>
+        <span class="icon-wraper">
+             {#if player.icon === "bishop"}
+                <ChessBishopIcon    height="1rem" color={player.iconColor}/> 
+            {:else if player.icon === "knight"}
+                <ChessKnightIcon    height="1rem" color={player.iconColor}/> 
+            {:else if player.icon === "pawn"}
+                <ChessPawnIcon      height="1rem" color={player.iconColor}/> 
+            {:else if player.icon === "rook"}
+                <ChessRookIcon      height="1rem" color={player.iconColor}/> 
+            {:else if player.icon === "cards"}
+                <PlayingCardsIcon   height="1rem" color={player.iconColor}/> 
+            
+            {:else if player.icon === "diamond"}
+                <DiamondIcon        height="1rem" color={player.iconColor}/> 
+            {:else if player.icon === "cannabis"}
+                <CannabisIcon       height="1rem" color={player.iconColor}/> 
+            {:else if player.icon === "mask"}
+                <DominoMaskIcon     height="1rem" color={player.iconColor}/> 
+            {:else if player.icon === "star"}
+                <FamilyStarIcon     height="1rem" color={player.iconColor}/> 
+            {:else if player.icon === "cross"}
+                <HealthCrossIcon    height="1rem" color={player.iconColor}/> 
+
+            {:else if player.icon === "rocket"}
+                <RocketIcon         height="1rem" color={player.iconColor}/> 
+            {:else if player.icon === "snow"}
+                <SnowflakeIcon      height="1rem" color={player.iconColor}/> 
+            {:else if player.icon === "sunny"}
+                <SunnyIcon          height="1rem" color={player.iconColor}/> 
+            {:else if player.icon === "tsunami"}
+                <TsunamiIcon        height="1rem" color={player.iconColor}/> 
+            {:else if player.icon === "wind"}
+                <WindPowerIcon      height="1rem" color={player.iconColor}/> 
+
+            {:else if player.icon === "pet"}
+                <PetsIcon           height="1rem" color={player.iconColor}/> 
+            {:else if player.icon === "owl"}
+                <OwlIcon            height="1rem" color={player.iconColor}/> 
+            {:else if player.icon === "raven"}
+                <RavenIcon          height="1rem" color={player.iconColor}/> 
+            {:else if player.icon === "snail"}
+                <SnailIcon          height="1rem" color={player.iconColor}/> 
+            {:else if player.icon === "hive"}
+                <HiveIcon           height="1rem" color={player.iconColor}/> 
+            {/if}
+        </span>
+    </span>
     
-    {:else if player.icon === "diamond"}
-        <DiamondIcon        height="1rem" color={player.iconColor}/> 
-    {:else if player.icon === "cannabis"}
-        <CannabisIcon       height="1rem" color={player.iconColor}/> 
-    {:else if player.icon === "mask"}
-        <DominoMaskIcon     height="1rem" color={player.iconColor}/> 
-    {:else if player.icon === "star"}
-        <FamilyStarIcon     height="1rem" color={player.iconColor}/> 
-    {:else if player.icon === "cross"}
-        <HealthCrossIcon    height="1rem" color={player.iconColor}/> 
-
-    {:else if player.icon === "rocket"}
-        <RocketIcon         height="1rem" color={player.iconColor}/> 
-    {:else if player.icon === "snow"}
-        <SnowflakeIcon      height="1rem" color={player.iconColor}/> 
-    {:else if player.icon === "sunny"}
-        <SunnyIcon          height="1rem" color={player.iconColor}/> 
-    {:else if player.icon === "tsunami"}
-        <TsunamiIcon        height="1rem" color={player.iconColor}/> 
-    {:else if player.icon === "wind"}
-        <WindPowerIcon      height="1rem" color={player.iconColor}/> 
-
-    {:else if player.icon === "pet"}
-        <PetsIcon           height="1rem" color={player.iconColor}/> 
-    {:else if player.icon === "owl"}
-        <OwlIcon            height="1rem" color={player.iconColor}/> 
-    {:else if player.icon === "raven"}
-        <RavenIcon          height="1rem" color={player.iconColor}/> 
-    {:else if player.icon === "snail"}
-        <SnailIcon          height="1rem" color={player.iconColor}/> 
-    {:else if player.icon === "hive"}
-        <HiveIcon           height="1rem" color={player.iconColor}/> 
-    {/if}
 {/if}
-
-
+ <style>
+    .icon-wraper{
+        vertical-align: middle;
+    }
+ </style>

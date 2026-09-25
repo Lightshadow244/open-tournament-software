@@ -66,8 +66,9 @@
                     {/if}
                 </div>
                 <div class="match-element match-player1-name with-icon">
-                    <div>{match.player1?.name}</div>
+                     <div>
                     <PlayerIcon player={<Player>match.player1}/>
+                     </div>
                     <div class="{match.winnerId == 1?"crown":"crown-hidden"}">
                         <CrownIcon height="1rem" color="currentcolor"/>
                     </div>
@@ -83,8 +84,9 @@
                 </div>
 
                 <div class="match-element match-player2-name with-icon">
-                    <div>{match.player2?.name}</div>
-                    <PlayerIcon player={<Player>match.player2}/>
+                    <div>
+                        <PlayerIcon player={<Player>match.player2}/>
+                    </div>
                     <div class="{match.winnerId == 2?"crown":"crown-hidden"}">
                         <CrownIcon height="1rem" color="currentcolor"/>
                     </div>
@@ -199,21 +201,20 @@
 
 .match .match-element:nth-child(1){
     border-top-left-radius: 0.3rem;
+    border-top-right-radius: 0.3rem;
     border-width: 2px 2px 2px 2px;
 }
 
 .match .match-element:nth-child(2){
-    border-top-right-radius: 0.3rem;
     border-width: 0px 2px 2px 2px;
 }
 
 .match .match-element:nth-child(3){
-    border-bottom-left-radius: 0.3rem;
     border-width: 0px 2px 2px 0px;
 }
 
 .match .match-element:nth-child(4){
-    border-bottom-right-radius: 0.3rem;
+    border-bottom-left-radius: 0.3rem;
     border-width: 0px 2px 2px 2px;
 }
 

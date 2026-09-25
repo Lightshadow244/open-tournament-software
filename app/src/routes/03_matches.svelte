@@ -38,21 +38,29 @@
     }
 
     function finish(){
+        let roundsAndMatchesHaveWinner = true;
+        // console.log(tournament.roundsAndMatches);
+        tournament.roundsAndMatches[tournament.roundsAndMatches.length - 1].forEach(match => {
+            if (match.winner == null && match.player1?.name !== "filler" && match.player2?.name !== "filler") {
+                    roundsAndMatchesHaveWinner = false;
+                }
+        })
 
-        let lastMatch = tournament.roundsAndMatches[tournament.roundsAndMatches.length - 1][0];
-
-        if (lastMatch.winner != null) {
-            tournament.ranks = calculateRanks(tournament);
-            updateTournament(tournament);
+        if (roundsAndMatchesHaveWinner) {
+                tournament.ranks = calculateRanks(tournament);
+                updateTournament(tournament);
         }else{
             triggerToast("There are roundsAndMatches without a winner!", "error");
-        }
+        } 
         
     }
 
     	$effect(() => {
-            console.log("scroll");
-            location.hash = "#" + "round-" + tournament.round;
+            if (tournament.ranks.length == 0){
+                location.hash = "#" + "round-" + tournament.round;
+            }else{
+                location.hash = "#" + "podium";
+            }
         })
 </script>
 
@@ -85,9 +93,9 @@
                             <div class="player-wrapper">
                                 <div>
                                     <div class="player-info">
-                                        <div class="player-name">
+                                        <!-- <div class="player-name">
                                             {match.player1?.name}
-                                        </div>
+                                        </div> -->
                                         <PlayerIcon player={<Player>match.player1}/>
                                     </div>
                                     
@@ -111,9 +119,9 @@
 
                                 <div>
                                     <div class="player-info">
-                                        <div class="player-name">
+                                        <!-- <div class="player-name">
                                             {match.player2?.name}
-                                        </div>
+                                        </div> -->
                                         <PlayerIcon player={<Player>match.player2}/>
                                     </div>
                                     <div class="player-counter">
@@ -159,7 +167,7 @@
             <button class="ots-button ots-button-success" onclick={() => finish()}>Finish</button>
         </div>
     {:else if tournament.ranks.length != 0}
-        <div transition:fade>
+        <div id="podium" transition:fade>
             <Podium tournament={tournament}/>
         </div>
     {/if }

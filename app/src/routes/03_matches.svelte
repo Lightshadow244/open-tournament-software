@@ -241,11 +241,6 @@
         align-items: center;
     }
 
-    .player-name{
-        text-align: center;
-        margin-right: 5px;
-    }
-
     .player-points{
         text-align: center;
         width: 3rem;

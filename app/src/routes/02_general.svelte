@@ -56,6 +56,13 @@
             }else{
                 triggerToast("Round Robin needs player count greater than 2", "error")
             }
+        }else if (tournament.mode === "Double Elimination") {
+            if (Number.isInteger(getLog2(tournament.players.length)) && tournament.players.length >= 8) {
+                tournament.roundsAndMatches = calculateMatches(tournament);
+                updateTournament(tournament, false, false, true); 
+            }else{
+                triggerToast("Double Elimination needs player count: 8, 16 ,32,...", "error")
+            }
         }
         changeView(2);
     }
@@ -115,8 +122,8 @@
         <label class="mode-element" for="doubleElimination">
             <!-- svelte-ignore binding_property_non_reactive -->
             <input type="radio" id="doubleElimination" name="mode" value="Double Elimination" bind:group={tournament.mode} disabled={tournament.status === "configuring" ? false : true}/>
-            <!-- <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Double Elimination</span> -->
-            <span class="mode-disabled">Double Elimination (not implemented)</span>
+            <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Double Elimination</span>
+            <!-- <span class="mode-disabled">Double Elimination (not implemented)</span> -->
         </label>
 
         <label class="mode-element" for="roundRobin">

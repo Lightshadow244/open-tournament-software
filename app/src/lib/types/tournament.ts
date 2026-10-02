@@ -41,6 +41,8 @@ export type Match = {
     final: boolean,
     semiFinal: boolean,
     littleFinal: boolean
+    winningBracket: boolean
+    losingBracket: boolean
 }
 
 export function changePlayerPointsForMatch(tournament:Tournament, roundId:number, matchId:number, playerId:number, points:number):Tournament{

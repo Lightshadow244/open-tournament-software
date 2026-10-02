@@ -136,6 +136,10 @@
         text-align: center;
     }
 
+    .match-element div{
+        margin:10px;
+    }
+
     .match .match-element:nth-child(1){
         border-top-left-radius: 0.3rem;
         border-top-right-radius: 0.3rem;

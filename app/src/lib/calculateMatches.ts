@@ -6,6 +6,8 @@ export function calculateMatches(tournament:Tournament):Array<Array<Match>>{
     
     if (tournament.mode === "Single Elimination") {
         tournament.roundsAndMatches = calculateSEMatches(tournament);
+    }else if(tournament.mode === "Double Elimination"){
+        tournament.roundsAndMatches = calculateDEMatches(tournament);
     }else if(tournament.mode === "Round Robin"){
         tournament.roundsAndMatches = calculateRRMatches(tournament);
     }
@@ -58,7 +60,9 @@ function calculateSEMatches(tournament:Tournament):Array<Array<Match>>{
                     name: "",
                     final: false,
                     semiFinal: false,
-                    littleFinal: false
+                    littleFinal: false,
+                    winningBracket: false,
+                    losingBracket: false
                     } as Match;
                     roundsAndMatches[roundId].push(newMatch);
             }
@@ -87,8 +91,10 @@ function calculateSEMatches(tournament:Tournament):Array<Array<Match>>{
             name: "",
             final: false,
             semiFinal: false,
-            littleFinal: true
-        }) 
+            littleFinal: true,
+            winningBracket: false,
+            losingBracket: false
+        } as Match) 
 
         //semi final
         roundsAndMatches[lastRoundId - 1][0].semiFinal = true;
@@ -152,6 +158,97 @@ function calculateSERanks(roundsAndMatches: Array<Array<Match>>, players: Array<
 }
 
 // #endregion Single Elimination
+
+// #region Double Elimination
+
+function calculateDEMatches(tournament:Tournament):Array<Array<Match>>{
+    let roundsAndMatches:Array<Array<Match>> = [];
+    const maxRounds = getLog2(tournament.players.length) * 2;
+    console.log("maxRounds:", maxRounds)
+
+    if (Number.isInteger(maxRounds)) {
+        // build structure 
+        for (let roundId = 0; roundId < maxRounds; roundId++) {
+            roundsAndMatches.push([])
+            // winning BRacket
+
+            function calcMaxMatchesWinningBracket():number {
+                let result = 0
+                if (roundId == 0 || roundId == 1) {
+                    result = tournament.players.length / (2 ** (roundId + 1))
+                }else{
+                    if (roundsAndMatches[roundId - 1].length == 0) {
+                        result = roundsAndMatches[roundId - 2].length / 2
+                    }else{
+                        result = 0
+                    }
+                }
+                return(result)
+            }
+
+            const maxMatchesCount = calcMaxMatchesWinningBracket();
+            console.log("Winning Bracket maxMatchesCount: ", maxMatchesCount)
+            for (let matchId = 0; matchId < maxMatchesCount; matchId++) {
+                const newMatch = {
+                    player1: null,
+                    player1Points: 0,
+                    player2: null,
+                    player2Points: 0,
+                    winner: null,
+                    winnerId: 0,
+                    loser: null,
+                    roundId: roundId,
+                    nextRoundId: roundId + 1,
+                    matchId: matchId,
+                    nextMatchId: Math.floor(matchId / 2),
+                    name: "",
+                    final: false,
+                    semiFinal: false,
+                    littleFinal: false,
+                    winningBracket: true,
+                    losingBracket:false
+                    } as Match;
+                    roundsAndMatches[roundId].push(newMatch);
+            }
+        
+
+    //         // losing bracket, not first round and not final
+    //         if (roundId > 0 && roundId != maxRounds - 1) {
+    //             const maxMatchesCount = tournament.players.length / 4 / (2 ** Math.floor((roundId - 1) / 2) );
+    //             console.log("roundId: ", roundId, " matchCount: ", maxMatchesCount)
+    //             for (let matchId = 0; matchId < maxMatchesCount; matchId++) {
+    //             const newMatch = {
+    //                 player1: null,
+    //                 player1Points: 0,
+    //                 player2: null,
+    //                 player2Points: 0,
+    //                 winner: null,
+    //                 winnerId: 0,
+    //                 loser: null,
+    //                 roundId: roundId,
+    //                 nextRoundId: roundId + 1,
+    //                 matchId: matchId,
+    //                 nextMatchId: Math.floor(matchId / 2),
+    //                 name: "",
+    //                 final: false,
+    //                 semiFinal: false,
+    //                 littleFinal: false,
+    //                 winningBracket: false,
+    //                 losingBracket: true
+    //                 } as Match;
+    //                 roundsAndMatches[roundId].push(newMatch);
+    //             }
+    //         }
+        }
+
+
+    }
+
+    console.log(roundsAndMatches);
+    return(roundsAndMatches);
+}
+
+// #endregion Double Elimination
 
 // #region Round Robin
 

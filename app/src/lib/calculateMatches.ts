@@ -17,6 +17,8 @@ export function calculateMatches(tournament:Tournament):Array<Array<Match>>{
 export function fillNextRound(tournament: Tournament):Array<Array<Match>>{
     if (tournament.mode === "Single Elimination") {
         tournament.roundsAndMatches = fillNextRoundSE(tournament);
+    }else if(tournament.mode === "Double Elimination"){
+        tournament.roundsAndMatches = fillNextRoundDE(tournament);
     }else if(tournament.mode === "Round Robin"){
         // nothing to do
     }
@@ -164,30 +166,37 @@ function calculateSERanks(roundsAndMatches: Array<Array<Match>>, players: Array<
 function calculateDEMatches(tournament:Tournament):Array<Array<Match>>{
     let roundsAndMatches:Array<Array<Match>> = [];
     const maxRounds = getLog2(tournament.players.length) * 2;
-    console.log("maxRounds:", maxRounds)
+
+    let lastWinningBracketMatches = 0;
+    let pauseWinningBracket = false;
 
     if (Number.isInteger(maxRounds)) {
         // build structure 
         for (let roundId = 0; roundId < maxRounds; roundId++) {
             roundsAndMatches.push([])
             // winning BRacket
+            
 
             function calcMaxMatchesWinningBracket():number {
                 let result = 0
                 if (roundId == 0 || roundId == 1) {
-                    result = tournament.players.length / (2 ** (roundId + 1))
+                    lastWinningBracketMatches = tournament.players.length / (2 ** (roundId + 1))
+                    result = lastWinningBracketMatches;
+                    pauseWinningBracket = true;
                 }else{
-                    if (roundsAndMatches[roundId - 1].length == 0) {
-                        result = roundsAndMatches[roundId - 2].length / 2
-                    }else{
+                    if (pauseWinningBracket) {
                         result = 0
+                        pauseWinningBracket = false;
+                    }else{
+                        lastWinningBracketMatches = lastWinningBracketMatches / 2
+                        result = lastWinningBracketMatches;
+                        pauseWinningBracket = true
                     }
                 }
                 return(result)
             }
 
             const maxMatchesCount = calcMaxMatchesWinningBracket();
-            console.log("Winning Bracket maxMatchesCount: ", maxMatchesCount)
             for (let matchId = 0; matchId < maxMatchesCount; matchId++) {
                 const newMatch = {
                     player1: null,
@@ -212,40 +221,118 @@ function calculateDEMatches(tournament:Tournament):Array<Array<Match>>{
             }
         
 
-    //         // losing bracket, not first round and not final
-    //         if (roundId > 0 && roundId != maxRounds - 1) {
-    //             const maxMatchesCount = tournament.players.length / 4 / (2 ** Math.floor((roundId - 1) / 2) );
-    //             console.log("roundId: ", roundId, " matchCount: ", maxMatchesCount)
-    //             for (let matchId = 0; matchId < maxMatchesCount; matchId++) {
-    //             const newMatch = {
-    //                 player1: null,
-    //                 player1Points: 0,
-    //                 player2: null,
-    //                 player2Points: 0,
-    //                 winner: null,
-    //                 winnerId: 0,
-    //                 loser: null,
-    //                 roundId: roundId,
-    //                 nextRoundId: roundId + 1,
-    //                 matchId: matchId,
-    //                 nextMatchId: Math.floor(matchId / 2),
-    //                 name: "",
-    //                 final: false,
-    //                 semiFinal: false,
-    //                 littleFinal: false,
-    //                 winningBracket: false,
-    //                 losingBracket: true
-    //                 } as Match;
-    //                 roundsAndMatches[roundId].push(newMatch);
-    //             }
-    //         }
+            // losing bracket, not first round and not final
+            if (roundId > 0 && roundId != maxRounds - 1) {
+                const maxMatchesCount = tournament.players.length / 4 / (2 ** Math.floor((roundId - 1) / 2) );
+                for (let matchId = 0; matchId < maxMatchesCount; matchId++) {
+                const newMatch = {
+                    player1: null,
+                    player1Points: 0,
+                    player2: null,
+                    player2Points: 0,
+                    winner: null,
+                    winnerId: 0,
+                    loser: null,
+                    roundId: roundId,
+                    nextRoundId: roundId + 1,
+                    matchId: matchId,
+                    nextMatchId: -1,
+                    name: "",
+                    final: false,
+                    semiFinal: false,
+                    littleFinal: false,
+                    winningBracket: false,
+                    losingBracket: true
+                    } as Match;
+                    roundsAndMatches[roundId].push(newMatch);
+                }
+            }
         }
 
+        //change status for final
+        const lastRoundId = roundsAndMatches.length - 1;
+        roundsAndMatches[lastRoundId][0].final = true; 
+
+        // fill first round with players
+        let playerId = 0;
+        roundsAndMatches[0].forEach(match => {
+            match.player1 = tournament.players[playerId]
+            playerId++;
+            match.player2 = tournament.players[playerId]
+            playerId++;
+        })
 
     }
 
-    console.log(roundsAndMatches);
     return(roundsAndMatches);
+}
+
+function fillNextRoundDE(tournament:Tournament):Array<Array<Match>>{
+
+    if (tournament.round == 0) {
+        // calculate for second round
+        let nextMatchId = 0;
+        const offset = tournament.roundsAndMatches[0].length / 2;
+        tournament.roundsAndMatches[tournament.round].forEach(matchOldRound => {
+            if (tournament.roundsAndMatches[matchOldRound.nextRoundId][nextMatchId].player1 == null){
+                tournament.roundsAndMatches[matchOldRound.nextRoundId][nextMatchId].player1 = matchOldRound.winner;
+                tournament.roundsAndMatches[matchOldRound.nextRoundId][nextMatchId + offset].player1 = matchOldRound.loser;
+            }else{
+                tournament.roundsAndMatches[matchOldRound.nextRoundId][nextMatchId].player2 = matchOldRound.winner;
+                tournament.roundsAndMatches[matchOldRound.nextRoundId][nextMatchId + offset].player2 = matchOldRound.loser;
+                nextMatchId++;
+            }
+        })
+    
+    } else if(tournament.round + 1 == tournament.roundsAndMatches.length - 1){
+        // calcultate for last round
+        tournament.roundsAndMatches[tournament.round + 1][0].player1 = tournament.roundsAndMatches[tournament.round - 1][0].winner;
+        tournament.roundsAndMatches[tournament.round + 1][0].player2 = tournament.roundsAndMatches[tournament.round][0].winner;
+    }else{
+        const lastRound = tournament.roundsAndMatches[tournament.round]
+
+        if (lastRound[0].winningBracket) {
+            let nextMatchId = 0;
+
+            for (let index = 0; index < lastRound.length / 2; index++) {
+                const lastWinningBracketMatch = lastRound[index];
+                tournament.roundsAndMatches[tournament.round + 1][nextMatchId].player2 = lastWinningBracketMatch.loser;
+                nextMatchId++;
+            }
+
+            nextMatchId = 0;
+            for (let index = lastRound.length / 2; index < lastRound.length; index++) {
+                const lastLosingBracketMatch = lastRound[index];
+                tournament.roundsAndMatches[tournament.round + 1][nextMatchId].player1 = lastLosingBracketMatch.winner;
+                nextMatchId++;
+            }
+        }else{
+            const lastWiningBracketRound = tournament.roundsAndMatches[tournament.round - 1]
+            let nextMatchId = 0;
+
+            for (let index = 0; index < lastWiningBracketRound.length / 2; index++) {
+                const lastWinningBracketMatch = lastWiningBracketRound[index];
+                if (tournament.roundsAndMatches[tournament.round + 1][nextMatchId].player1 == null){
+                    tournament.roundsAndMatches[tournament.round + 1][nextMatchId].player1 = lastWinningBracketMatch.winner;
+                }else{
+                    tournament.roundsAndMatches[tournament.round + 1][nextMatchId].player2 = lastWinningBracketMatch.winner;
+                    nextMatchId++;
+                }
+            }
+
+            nextMatchId = lastRound.length / 2;
+            lastRound.forEach(losingBracketMatch => {
+                if (tournament.roundsAndMatches[tournament.round + 1][nextMatchId].player1 == null){
+                    tournament.roundsAndMatches[tournament.round + 1][nextMatchId].player1 = losingBracketMatch.winner;
+                }else{
+                    tournament.roundsAndMatches[tournament.round + 1][nextMatchId].player2 = losingBracketMatch.winner;
+                    nextMatchId++;
+                }
+            })
+        }
+    }
+
+    return(tournament.roundsAndMatches)
 }
 
 // #endregion Double Elimination

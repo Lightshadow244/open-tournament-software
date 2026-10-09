@@ -61,7 +61,8 @@
                 {id: 3, name:"Player 4", icon: randomIcon(), iconColor: randomColor(), changeIcon: false}],
             roundsAndMatches     : [],
             round                : 0,
-            ranks               : []
+            ranks               : [],
+            overviewDE           :{"winningBracket": [], losingBracket: []}
         }
 
         tts[new_tt.id] = new_tt;

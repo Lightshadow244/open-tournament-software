@@ -66,9 +66,9 @@
                     {/if}
                 </div>
                 <div class="match-element match-player1-name with-icon">
-                     <div>
-                    <PlayerIcon player={<Player>match.player1}/>
-                     </div>
+                    <div>
+                        <PlayerIcon player={<Player>match.player1}/>
+                    </div>
                     <div class="{match.winnerId == 1?"crown":"crown-hidden"}">
                         <CrownIcon height="1rem" color="currentcolor"/>
                     </div>

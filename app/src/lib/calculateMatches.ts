@@ -1,4 +1,7 @@
-import type { Tournament, Player, Match } from '$lib/types/tournament';
+import type { Tournament, Player, Match, OverviewDE} from '$lib/types/tournament';
+import {calculateFillBlocks} from '$lib/types/tournament';
+
+
 
 
 export function calculateMatches(tournament:Tournament):Array<Array<Match>>{
@@ -8,6 +11,7 @@ export function calculateMatches(tournament:Tournament):Array<Array<Match>>{
         tournament.roundsAndMatches = calculateSEMatches(tournament);
     }else if(tournament.mode === "Double Elimination"){
         tournament.roundsAndMatches = calculateDEMatches(tournament);
+        tournament.overviewDE = calculateDEOverview(tournament);
     }else if(tournament.mode === "Round Robin"){
         tournament.roundsAndMatches = calculateRRMatches(tournament);
     }
@@ -266,6 +270,105 @@ function calculateDEMatches(tournament:Tournament):Array<Array<Match>>{
 
     return(roundsAndMatches);
 }
+
+function calculateDEOverview(tournament:Tournament): OverviewDE{
+        let wb = tournament.overviewDE.winningBracket;
+        let wbRoundCounter = 0;
+        tournament.roundsAndMatches.forEach((round, roundId) => {
+            wb.push([]);
+            
+            // placeholder before matches
+            for (let index = 0; index < calculateFillBlocks(wbRoundCounter); index++) {
+                wb[roundId].push({
+                    name:"placeholder"
+                } as Match)
+            }
+
+            // matches
+            // first round and last round
+            if(roundId == 0 || roundId + 1 == tournament.roundsAndMatches.length){
+                round.forEach((match, matchId) => {
+                    wb[roundId].push(match)
+
+                    // placeholder between matches
+                    if (matchId + 1 != round.length) {
+                        for (let index = 0; index < calculateFillBlocks(wbRoundCounter + 1); index++) {
+                            wb[roundId].push({
+                                name:"placeholder"
+                            } as Match)
+                        }
+                    }
+                })
+                wbRoundCounter++
+            }else{
+                if(round[0].winningBracket){
+                    round.slice(0, round.length / 2).forEach((match, matchId) => {
+                        wb[roundId].push(match)
+
+                        // placeholder between matches
+                        if (matchId + 1 != round.length / 2) {
+                            for (let index = 0; index < calculateFillBlocks(wbRoundCounter + 1); index++) {
+                                wb[roundId].push({
+                                    name:"placeholder"
+                                } as Match)
+                            }
+                        }
+                    })
+                    wbRoundCounter++
+                }
+            }
+        })
+
+        let lb = tournament.overviewDE.losingBracket;
+        let lbRoundCounter = 0;
+        tournament.roundsAndMatches.forEach((round, roundId) => {
+            lb.push([]);
+
+            if (roundId == 0 || roundId + 1 == tournament.roundsAndMatches.length) {
+                lb[roundId].push({
+                    name:"placeholder"
+                } as Match)
+                lbRoundCounter++;
+            }else{
+                // placeholder before matches
+                for (let index = 0; index < calculateFillBlocks(lbRoundCounter); index++) {
+                    lb[roundId].push({
+                        name:"placeholder"
+                    } as Match)
+                }
+
+                if(round[0].winningBracket){
+                    round.slice(round.length / 2, round.length ).forEach((match, matchId) => {
+                        lb[roundId].push(match)
+
+                        // placeholder between matches
+                        if (matchId + 1 != round.length / 2) {
+                            for (let index = 0; index < calculateFillBlocks(lbRoundCounter + 1); index++) {
+                                lb[roundId].push({
+                                    name:"placeholder"
+                                } as Match)
+                            }
+                        }
+                    })
+                }else{
+                    round.forEach((match, matchId) => {
+                        lb[roundId].push(match)
+
+                        // placeholder between matches
+                        if (matchId + 1 != round.length) {
+                            for (let index = 0; index < calculateFillBlocks(lbRoundCounter + 1); index++) {
+                                lb[roundId].push({
+                                    name:"placeholder"
+                                } as Match)
+                            }
+                        }
+                    })
+                    lbRoundCounter++
+                }
+            }
+        })
+        return(tournament.overviewDE)
+    }
 
 function fillNextRoundDE(tournament:Tournament):Array<Array<Match>>{
 

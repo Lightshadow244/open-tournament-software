@@ -57,7 +57,7 @@
                 triggerToast("Round Robin needs player count greater than 2", "error")
             }
         }else if (tournament.mode === "Double Elimination") {
-            if (Number.isInteger(getLog2(tournament.players.length)) && tournament.players.length >= 8) {
+            if (Number.isInteger(getLog2(tournament.players.length)) && tournament.players.length >= 4) {
                 tournament.roundsAndMatches = calculateMatches(tournament);
                 updateTournament(tournament, false, false, true); 
             }else{

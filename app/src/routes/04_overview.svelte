@@ -60,7 +60,6 @@
             if (roundsAndMatchesHaveWinner) {
                 tournament.roundsAndMatches = fillNextRound(tournament);
                 tournament.round++;
-                console.log(tournament)
                 updateTournament(tournament);
             }else{
                 triggerToast("There are roundsAndMatches without a winner!", "error");
@@ -108,14 +107,6 @@
 </div>
 
 <style>
-    /* .overview-area{
-        position: relative;
-        width: 100%;
-        height: calc(100vh - 4rem);
-        overflow: hidden;
-        background-color: light-dark(var(--light), var(--dark-secondary));
-        border-radius: 0.3rem;
-    } */
     .overview-area{
         margin-top: 0.5rem;
         border-radius: 0.3rem;

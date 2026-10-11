@@ -15,8 +15,8 @@
     
 
     let overview = {
-        "winningBracket": [] as number[][],
-        "losingBracket": [] as number[][]
+        "winningBracket": [] as number[][][], //[round], [match], [matchId, lineLeftWidth, lineDownHeight]
+        "losingBracket": [] as number[][][]
     }
 
 
@@ -28,20 +28,32 @@
             
             // placeholder before matches
             for (let index = 0; index < calculateFillBlocks(wbRoundCounter); index++) {
-                wb[roundId].push(-1)
+                wb[roundId].push([-1, 0 ,0])
             }
 
             // matches
             // first round and last round
             if(roundId == 0 || roundId + 1 == tournament.roundsAndMatches.length){
+
+                let lineLeftWidth = 0
+                let lineDownHeight = 0
+
+                if (roundId == 0) {
+                    lineDownHeight = (calculateFillBlocks(wbRoundCounter + 1)) * 135
+                }
+
                 round.forEach((match, matchId) => {
-                    // wb[roundId].push(match)
-                    wb[roundId].push(match.matchId)
+
+                    if(match.matchId % 2 == 0){
+                        wb[roundId].push([match.matchId, 0, lineDownHeight])
+                    }else{
+                        wb[roundId].push([match.matchId, 0, 0])
+                    }
 
                     // placeholder between matches
                     if (matchId + 1 != round.length) {
                         for (let index = 0; index < calculateFillBlocks(wbRoundCounter + 1); index++) {
-                            wb[roundId].push(-1)
+                            wb[roundId].push([-1, 0 ,0])
                         }
                     }
                 })
@@ -49,12 +61,34 @@
             }else{
                 if(round[0].winningBracket){
                     round.slice(0, round.length / 2).forEach((match, matchId) => {
-                        wb[roundId].push(match.matchId)
+                        let lineLeftWidth = 0
+                        let lineDownHeight = 0
+
+                        // line from semi final has be shorter
+                        if (roundId == tournament.roundsAndMatches.length - 3) {
+                            lineDownHeight = (calculateFillBlocks(wbRoundCounter)) * 135
+                        }else{
+                            lineDownHeight = (calculateFillBlocks(wbRoundCounter + 1)) * 135
+                        }
+
+                        if (roundId == 1) {
+                            lineLeftWidth = 64
+                        }else{
+                            lineLeftWidth = (64 * 2) + 112
+                        }
+
+                        
+
+                        if(match.matchId % 2 == 0){
+                        wb[roundId].push([match.matchId, lineLeftWidth, lineDownHeight])
+                        }else{
+                           wb[roundId].push([match.matchId, lineLeftWidth, 0]) 
+                        }
 
                         // placeholder between matches
                         if (matchId + 1 != round.length / 2) {
                             for (let index = 0; index < calculateFillBlocks(wbRoundCounter + 1); index++) {
-                                wb[roundId].push(-1)
+                                wb[roundId].push([-1, 0 ,0])
                             }
                         }
                     })
@@ -69,33 +103,33 @@
             lb.push([]);
 
             if (roundId == 0 || roundId + 1 == tournament.roundsAndMatches.length) {
-                lb[roundId].push(-1)
+                lb[roundId].push([-1, 0 ,0])
                 lbRoundCounter++;
             }else{
                 // placeholder before matches
                 for (let index = 0; index < calculateFillBlocks(lbRoundCounter); index++) {
-                    lb[roundId].push(-1)
+                    lb[roundId].push([-1, 0 ,0])
                 }
 
                 if(round[0].winningBracket){
                     round.slice(round.length / 2, round.length ).forEach((match, matchId) => {
-                        lb[roundId].push(match.matchId)
+                        lb[roundId].push([match.matchId, 10, 10])
 
                         // placeholder between matches
                         if (matchId + 1 != round.length / 2) {
                             for (let index = 0; index < calculateFillBlocks(lbRoundCounter + 1); index++) {
-                                lb[roundId].push(-1)
+                                lb[roundId].push([-1, 0 ,0])
                             }
                         }
                     })
                 }else{
                     round.forEach((match, matchId) => {
-                        lb[roundId].push(match.matchId)
+                        lb[roundId].push([match.matchId, 10, 10])
 
                         // placeholder between matches
                         if (matchId + 1 != round.length) {
                             for (let index = 0; index < calculateFillBlocks(lbRoundCounter + 1); index++) {
-                                lb[roundId].push(-1)
+                                lb[roundId].push([-1, 0 ,0])
                             }
                         }
                     })
@@ -117,16 +151,18 @@
         <div class="rounds-wrapper">
             {#each tournament.roundsAndMatches as round, roundId (roundId) }
                 <div class="matches-wrapper">
-                    {#each overview.winningBracket[roundId] as matchId, i (i) }
-                        {#if matchId == -1}
+                    {#each overview.winningBracket[roundId] as matchInfo, i (i) }
+                        {#if matchInfo[0] == -1}
                             <div class="placeholder" ></div>
                         {:else}
                             <OverviewMatch 
                                 tournament={tournament} 
                                 editable={tournament.round == roundId && tournament.ranks.length == 0 } 
-                                match={round[matchId]} 
+                                match={round[matchInfo[0]]} 
                                 roundId={roundId} 
                                 updateTournament={updateTournament}
+                                horLineWidth={matchInfo[1]}
+                                verLineHeight={matchInfo[2]}
                             />
                         {/if}
                     {/each}
@@ -141,16 +177,18 @@
         <div class="rounds-wrapper">
             {#each tournament.roundsAndMatches as round, roundId (roundId) }
                 <div class="matches-wrapper">
-                    {#each overview.losingBracket[roundId] as matchId, i (i) }
-                        {#if matchId == -1}
+                    {#each overview.losingBracket[roundId] as matchInfo, i (i) }
+                        {#if matchInfo[0] == -1}
                             <div class="placeholder" ></div>
                         {:else}
                             <OverviewMatch 
                                 tournament={tournament} 
                                 editable={tournament.round == roundId && tournament.ranks.length == 0 } 
-                                match={round[matchId]} 
+                                match={round[matchInfo[0]]} 
                                 roundId={roundId} 
                                 updateTournament={updateTournament}
+                                horLineWidth={matchInfo[1]}
+                                verLineHeight={matchInfo[2]}
                             />
                         {/if}
                     {/each}

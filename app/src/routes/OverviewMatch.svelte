@@ -10,13 +10,19 @@
         editable: boolean;
         match: Match;
         roundId: number;
+        horLineWidth: number;
+        verLineHeight: number;
 
         updateTournament(tt: Tournament, configuring?:boolean, initializing?:boolean, running?:boolean): void;
     }
-    let { tournament,editable, match,  roundId, updateTournament,  }: Props = $props();
+    let { tournament,editable, match,  roundId, updateTournament,  horLineWidth, verLineHeight}: Props = $props();
 
 </script>
-<div class="match">
+<div 
+    // class="match {match.matchId % 2 == 0 && roundId != tournament.roundsAndMatches.length - 1?"before-line-down":""} {roundId > 0?"after-line-left":""}"
+    class="match before-line-down after-line-left"
+    style="--horLineWidth:{horLineWidth}px; --verLineHeight:{verLineHeight}px;"
+    >
     <div class="match-element match-title">
         {#if match.final}
             <h4>Final</h4>
@@ -154,5 +160,28 @@
 
 .crown-hidden{
     display: none;
+}
+
+.before-line-down::before{
+    content: "";
+    position: absolute;
+    top: 135px;
+    left: 224px;
+    height: var(--verLineHeight);
+    border-width: 0 0 0 3px;
+    border-style: solid;
+    border-color: light-dark(var(--light-highlight), var(--dark-highlight));
+}
+
+.after-line-left::after{
+    content: "";
+    position: absolute;
+    top: 65px;
+    /* left: -64px; */
+    left: calc(var(--horLineWidth) * -1);
+    width: var(--horLineWidth);
+    border-width: 0 0 3px 0;
+    border-style: solid;
+    border-color: light-dark(var(--light-highlight), var(--dark-highlight));
 }
 </style>

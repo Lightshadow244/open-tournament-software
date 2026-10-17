@@ -1,7 +1,7 @@
 # Open Tournament Software
 
 <h1 align="center">
-  <img src="./Logo/Logo_dynamic_with_text.svg" width="200" alt="Logo OTS"> 
+  <img src="./Logo/Logo_with_text.png" width="200" alt="Logo OTS">
 </h1>
 
 <br/>

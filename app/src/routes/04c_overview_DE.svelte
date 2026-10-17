@@ -39,24 +39,30 @@
                 let lineDownHeight = 0
 
                 if (roundId == 0) {
-                    lineDownHeight = (calculateFillBlocks(wbRoundCounter + 1)) * 135
+                    lineDownHeight = (calculateFillBlocks(wbRoundCounter + 1)) * 135;
+
+                        round.forEach((match, matchId) => {
+
+                            if(match.matchId % 2 == 0){
+                                wb[roundId].push([match.matchId, 0, lineDownHeight])
+                            }else{
+                                wb[roundId].push([match.matchId, 0, 0])
+                            }
+
+                            // placeholder between matches
+                            if (matchId + 1 != round.length) {
+                                for (let index = 0; index < calculateFillBlocks(wbRoundCounter + 1); index++) {
+                                    wb[roundId].push([-1, 0 ,0])
+                                }
+                            }
+                        })
+                }else{
+                    lineLeftWidth = (2 * 40) + 23 + 250;
+
+                    wb[roundId].push([round[0].matchId, lineLeftWidth, 0])
                 }
 
-                round.forEach((match, matchId) => {
-
-                    if(match.matchId % 2 == 0){
-                        wb[roundId].push([match.matchId, 0, lineDownHeight])
-                    }else{
-                        wb[roundId].push([match.matchId, 0, 0])
-                    }
-
-                    // placeholder between matches
-                    if (matchId + 1 != round.length) {
-                        for (let index = 0; index < calculateFillBlocks(wbRoundCounter + 1); index++) {
-                            wb[roundId].push([-1, 0 ,0])
-                        }
-                    }
-                })
+                
                 wbRoundCounter++
             }else{
                 if(round[0].winningBracket){
@@ -64,9 +70,9 @@
                         let lineLeftWidth = 0
                         let lineDownHeight = 0
 
-                        // line from semi final has be shorter
+                        // line from semi final to final has to be shorter + a offset
                         if (roundId == tournament.roundsAndMatches.length - 3) {
-                            lineDownHeight = (calculateFillBlocks(wbRoundCounter)) * 135
+                            lineDownHeight = (calculateFillBlocks(wbRoundCounter)) * 135 + 68;
                         }else{
                             lineDownHeight = (calculateFillBlocks(wbRoundCounter + 1)) * 135
                         }
@@ -74,13 +80,12 @@
                         if (roundId == 1) {
                             lineLeftWidth = 64
                         }else{
-                            lineLeftWidth = (64 * 2) + 112
+                            lineLeftWidth = (2 * 40) + 23 + 250; // 2x gap + offset left + width match
+
                         }
 
-                        
-
                         if(match.matchId % 2 == 0){
-                        wb[roundId].push([match.matchId, lineLeftWidth, lineDownHeight])
+                            wb[roundId].push([match.matchId, lineLeftWidth, lineDownHeight])
                         }else{
                            wb[roundId].push([match.matchId, lineLeftWidth, 0]) 
                         }

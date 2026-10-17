@@ -13,6 +13,7 @@
 
     import SunnyIcon from '@iconify-svelte/material-symbols/sunny';
     import NightIcon from '@iconify-svelte/material-symbols/mode-night';
+    import Logo  from '$lib/assets/Logo.svelte';
 
     // let tmpTournaments = ;
 
@@ -111,7 +112,8 @@
 
 <nav bind:this={navbar} class="navbar">
 
-    <a class="nav-item nav-start home-link" href={resolve("/")}>Open Tournament Software</a>
+    <!-- <a class="nav-item nav-start home-link" href={resolve("/")}>Open Tournament Software</a> -->
+    <a class="nav-logo nav-start home-link" href={resolve("/")}><Logo /></a>
     
     <div class="view-selection nav-item">
         <button class="{view == 0 ? "active":""}" onclick={() => {view=0}}>Tournaments</button>
@@ -167,7 +169,7 @@
         align-items: center;
         color-scheme: dark;
         font-family: Open-Sans,sans-serif;
-        gap: 0.25rem;
+        gap: 1rem;
         transition: all 0.3s ease;
         z-index: 999;
         
@@ -185,6 +187,12 @@
     }
     .nav-item{
     } */
+    .nav-logo :global(svg){
+        height: 40px;
+        width: auto;
+        color: light-dark(var(--light-text), var(--dark-text));
+        transition: all 0.3s ease;
+    }
     .nav-start{
         margin-left: 3rem;
     }
@@ -197,8 +205,8 @@
 
     .view-selection{
         display: flex;
-        gap:0;
-        height:100%
+        gap:0.25rem;
+        height:100%;
     }
 
     .view-selection button{

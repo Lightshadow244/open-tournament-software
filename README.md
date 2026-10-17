@@ -1,8 +1,10 @@
-# open-tournament-software
-Hold tournaments of any kinds.
+# Open Tournament Software
 
-## Data storage
-All data is stored in your browser local storage.
+<h1 align="center">
+  <img src="./Logo/Logo_dynamic_with_text.svg" width="200" alt="Logo OTS"> 
+</h1>
+
+<br/>
 
 ## Features
 - Create multiple tournaments:
@@ -16,9 +18,12 @@ All data is stored in your browser local storage.
   - Choose icon 
   - Choose icon color
   - Choose strength (planned)
-  
+
 ## Demo
 Open-tournament-software is avaiable at github-pages.
+
+## Data storage
+All data is stored in your browser local storage.
 
 ## Setup
 Requirements: `npm`

@@ -198,7 +198,9 @@
 <div>
     <div>
         <div>
+        <h3>
             Winning Bracket
+        </h3>
         </div>
 
         <div class="rounds-wrapper">
@@ -227,7 +229,9 @@
     </div>
     <div>
         <div>
+            <h3>
             Losing Bracket
+            </h3>
         </div>
         <div class="rounds-wrapper">
             {#each tournament.roundsAndMatches as round, roundId (roundId) }

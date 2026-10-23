@@ -111,9 +111,7 @@
 </script>
 
 <nav bind:this={navbar} class="navbar">
-
-    <!-- <a class="nav-item nav-start home-link" href={resolve("/")}>Open Tournament Software</a> -->
-    <a class="nav-logo nav-start home-link" href={resolve("/")}><Logo /></a>
+    <a class="nav-logo nav-start home-link" href={""} onclick={() => window.location.reload()}><Logo /></a>
     
     <div class="view-selection nav-item">
         <button class="{view == 0 ? "active":""}" onclick={() => {view=0}}>Tournaments</button>

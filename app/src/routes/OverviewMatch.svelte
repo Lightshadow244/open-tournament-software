@@ -11,17 +11,19 @@
         match: Match;
         roundId: number;
         horLineWidth: number;
+        verLineLeft: number;
+        verLineTop: number;
         verLineHeight: number;
 
         updateTournament(tt: Tournament, configuring?:boolean, initializing?:boolean, running?:boolean): void;
     }
-    let { tournament,editable, match,  roundId, updateTournament,  horLineWidth, verLineHeight}: Props = $props();
+    let { tournament,editable, match,  roundId, updateTournament,  horLineWidth, verLineHeight, verLineLeft, verLineTop}: Props = $props();
 
 </script>
 <div 
     // class="match {match.matchId % 2 == 0 && roundId != tournament.roundsAndMatches.length - 1?"before-line-down":""} {roundId > 0?"after-line-left":""}"
     class="match before-line-down after-line-left"
-    style="--horLineWidth:{horLineWidth}px; --verLineHeight:{verLineHeight}px;"
+    style="--horLineWidth:{horLineWidth}px; --verLineHeight:{verLineHeight}px; --verLineLeft:{verLineLeft}px; --verLineTop:{verLineTop}px"
     >
     <div class="match-element match-title">
         {#if match.final}
@@ -165,8 +167,10 @@
 .before-line-down::before{
     content: "";
     position: absolute;
-    top: 135px;
-    left: 224px;
+    /* top: 135px; */
+    /* left: 224px; */
+    top: var(--verLineTop);
+    left: var(--verLineLeft);
     height: var(--verLineHeight);
     border-width: 0 0 0 3px;
     border-style: solid;
@@ -177,7 +181,6 @@
     content: "";
     position: absolute;
     top: 65px;
-    /* left: -64px; */
     left: calc(var(--horLineWidth) * -1);
     width: var(--horLineWidth);
     border-width: 0 0 3px 0;

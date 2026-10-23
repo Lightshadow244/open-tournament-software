@@ -1,6 +1,6 @@
 <script lang="ts">
-    import type { Tournament, Player, Match} from '$lib/types/tournament';
-    import {changePlayerPointsForMatch, calculateFillBlocks} from '$lib/types/tournament';
+    import type { Tournament, FormattedMatch} from '$lib/types/tournament';
+    import {calculateFillBlocks} from '$lib/types/tournament';
 
     import OverviewMatch from './OverviewMatch.svelte';
 
@@ -12,11 +12,10 @@
         triggerToast(msg:string, level:string): void;
         }
     let { tournament, updateTournament, triggerToast }: Props = $props();
-    
 
     let overview = {
-        "winningBracket": [] as number[][][], //[round], [match], [matchId, lineLeftWidth, lineDownHeight]
-        "losingBracket": [] as number[][][]
+        "winningBracket": [] as FormattedMatch[][], // [round] [formattedMatch]
+        "losingBracket": [] as FormattedMatch[][],
     }
 
 
@@ -28,38 +27,51 @@
             
             // placeholder before matches
             for (let index = 0; index < calculateFillBlocks(wbRoundCounter); index++) {
-                wb[roundId].push([-1, 0 ,0])
+                wb[roundId].push({matchId: -1} as FormattedMatch)
             }
 
             // matches
             // first round and last round
             if(roundId == 0 || roundId + 1 == tournament.roundsAndMatches.length){
 
-                let lineLeftWidth = 0
-                let lineDownHeight = 0
-
                 if (roundId == 0) {
-                    lineDownHeight = (calculateFillBlocks(wbRoundCounter + 1)) * 135;
-
                         round.forEach((match, matchId) => {
-
+                            let fm = {
+                                matchId: match.matchId,
+                                horLineWidth: 0,
+                                verLineHeight: 0,
+                                verLineLeft: 224,
+                                verLineTop: 135,
+                            } as FormattedMatch;
                             if(match.matchId % 2 == 0){
-                                wb[roundId].push([match.matchId, 0, lineDownHeight])
+                                fm.verLineHeight = (calculateFillBlocks(wbRoundCounter + 1)) * 135;
+                                 wb[roundId].push(fm)
                             }else{
-                                wb[roundId].push([match.matchId, 0, 0])
+                                wb[roundId].push(fm)
                             }
 
                             // placeholder between matches
                             if (matchId + 1 != round.length) {
                                 for (let index = 0; index < calculateFillBlocks(wbRoundCounter + 1); index++) {
-                                    wb[roundId].push([-1, 0 ,0])
+                                    wb[roundId].push({matchId: -1} as FormattedMatch)
                                 }
                             }
                         })
                 }else{
-                    lineLeftWidth = (2 * 40) + 23 + 250;
+                    let fm = {
+                        matchId: 0,
+                        horLineWidth: 0,
+                        verLineHeight: 0,
+                        verLineLeft: 224,
+                        verLineTop: 135,
+                    } as FormattedMatch;
 
-                    wb[roundId].push([round[0].matchId, lineLeftWidth, 0])
+                    fm.horLineWidth = (2 * 40) + 23 + 250;
+                    fm.verLineHeight = ((calculateFillBlocks(wbRoundCounter - 1)) * 135) + 94;
+                    fm.verLineLeft = -66;
+                    fm.verLineTop = 65
+
+                    wb[roundId].push(fm)
                 }
 
                 
@@ -67,33 +79,41 @@
             }else{
                 if(round[0].winningBracket){
                     round.slice(0, round.length / 2).forEach((match, matchId) => {
-                        let lineLeftWidth = 0
-                        let lineDownHeight = 0
+                        let fm = {
+                            matchId: match.matchId,
+                            horLineWidth: 0,
+                            verLineHeight: 0,
+                            verLineLeft: 224,
+                            verLineTop: 135,
+                        } as FormattedMatch;
 
                         // line from semi final to final has to be shorter + a offset
                         if (roundId == tournament.roundsAndMatches.length - 3) {
-                            lineDownHeight = (calculateFillBlocks(wbRoundCounter)) * 135 + 68;
+                            fm.verLineHeight = (calculateFillBlocks(wbRoundCounter)) * 135 + 68;
                         }else{
-                            lineDownHeight = (calculateFillBlocks(wbRoundCounter + 1)) * 135
+                            fm.verLineHeight = (calculateFillBlocks(wbRoundCounter + 1)) * 135
                         }
 
                         if (roundId == 1) {
-                            lineLeftWidth = 64
+                            fm.horLineWidth = 64
                         }else{
-                            lineLeftWidth = (2 * 40) + 23 + 250; // 2x gap + offset left + width match
+                            fm.horLineWidth = (2 * 40) + 23 + 250; // 2x gap + offset left + width match
 
                         }
 
                         if(match.matchId % 2 == 0){
-                            wb[roundId].push([match.matchId, lineLeftWidth, lineDownHeight])
+                            wb[roundId].push(fm)
                         }else{
-                           wb[roundId].push([match.matchId, lineLeftWidth, 0]) 
+                            fm.verLineHeight = 0;
+                            fm.verLineLeft = 0;
+                            wb[roundId].push(fm)
                         }
+
 
                         // placeholder between matches
                         if (matchId + 1 != round.length / 2) {
                             for (let index = 0; index < calculateFillBlocks(wbRoundCounter + 1); index++) {
-                                wb[roundId].push([-1, 0 ,0])
+                                wb[roundId].push({matchId: -1} as FormattedMatch)
                             }
                         }
                     })
@@ -108,33 +128,61 @@
             lb.push([]);
 
             if (roundId == 0 || roundId + 1 == tournament.roundsAndMatches.length) {
-                lb[roundId].push([-1, 0 ,0])
+                lb[roundId].push({matchId: -1} as FormattedMatch)
                 lbRoundCounter++;
             }else{
                 // placeholder before matches
                 for (let index = 0; index < calculateFillBlocks(lbRoundCounter); index++) {
-                    lb[roundId].push([-1, 0 ,0])
+                    lb[roundId].push({matchId: -1} as FormattedMatch)
                 }
 
                 if(round[0].winningBracket){
                     round.slice(round.length / 2, round.length ).forEach((match, matchId) => {
-                        lb[roundId].push([match.matchId, 10, 10])
+                        let fm = {
+                            matchId: match.matchId,
+                            horLineWidth: 0,
+                            verLineHeight: 0,
+                            verLineLeft: 224,
+                            verLineTop: 135,
+                        } as FormattedMatch;
+
+                         if (roundId > 1) {
+                            fm.horLineWidth = 65;
+                        }
+
+                        lb[roundId].push(fm)
 
                         // placeholder between matches
                         if (matchId + 1 != round.length / 2) {
                             for (let index = 0; index < calculateFillBlocks(lbRoundCounter + 1); index++) {
-                                lb[roundId].push([-1, 0 ,0])
+                                lb[roundId].push({matchId: -1} as FormattedMatch)
                             }
                         }
                     })
                 }else{
                     round.forEach((match, matchId) => {
-                        lb[roundId].push([match.matchId, 10, 10])
+                        let fm = {
+                            matchId: match.matchId,
+                            horLineWidth: 0,
+                            verLineHeight: 0,
+                            verLineLeft: 224,
+                            verLineTop: 135,
+                        } as FormattedMatch;
+
+                       if (roundId > 1) {
+                            fm.horLineWidth = 40;
+                        }
+
+                        if (matchId % 2 == 0 && roundId != tournament.roundsAndMatches.length - 2) { 
+                            fm.verLineHeight = (calculateFillBlocks(lbRoundCounter + 1)) * 135;
+                        }
+
+                        lb[roundId].push(fm);
 
                         // placeholder between matches
                         if (matchId + 1 != round.length) {
                             for (let index = 0; index < calculateFillBlocks(lbRoundCounter + 1); index++) {
-                                lb[roundId].push([-1, 0 ,0])
+                                lb[roundId].push({matchId: -1} as FormattedMatch)
                             }
                         }
                     })
@@ -157,17 +205,19 @@
             {#each tournament.roundsAndMatches as round, roundId (roundId) }
                 <div class="matches-wrapper">
                     {#each overview.winningBracket[roundId] as matchInfo, i (i) }
-                        {#if matchInfo[0] == -1}
+                        {#if matchInfo.matchId == -1}
                             <div class="placeholder" ></div>
                         {:else}
                             <OverviewMatch 
                                 tournament={tournament} 
                                 editable={tournament.round == roundId && tournament.ranks.length == 0 } 
-                                match={round[matchInfo[0]]} 
+                                match={round[matchInfo.matchId]} 
                                 roundId={roundId} 
                                 updateTournament={updateTournament}
-                                horLineWidth={matchInfo[1]}
-                                verLineHeight={matchInfo[2]}
+                                horLineWidth={matchInfo.horLineWidth}
+                                verLineHeight={matchInfo.verLineHeight}
+                                verLineLeft={matchInfo.verLineLeft}
+                                verLineTop={matchInfo.verLineTop}
                             />
                         {/if}
                     {/each}
@@ -183,17 +233,19 @@
             {#each tournament.roundsAndMatches as round, roundId (roundId) }
                 <div class="matches-wrapper">
                     {#each overview.losingBracket[roundId] as matchInfo, i (i) }
-                        {#if matchInfo[0] == -1}
+                        {#if matchInfo.matchId == -1}
                             <div class="placeholder" ></div>
                         {:else}
                             <OverviewMatch 
                                 tournament={tournament} 
                                 editable={tournament.round == roundId && tournament.ranks.length == 0 } 
-                                match={round[matchInfo[0]]} 
+                                match={round[matchInfo.matchId]} 
                                 roundId={roundId} 
                                 updateTournament={updateTournament}
-                                horLineWidth={matchInfo[1]}
-                                verLineHeight={matchInfo[2]}
+                                horLineWidth={matchInfo.horLineWidth}
+                                verLineHeight={matchInfo.verLineHeight}
+                                verLineLeft={matchInfo.verLineLeft}
+                                verLineTop={matchInfo.verLineTop}
                             />
                         {/if}
                     {/each}

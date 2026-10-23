@@ -51,6 +51,14 @@ export type Match = {
     losingBracket: boolean
 }
 
+export type FormattedMatch = {
+    matchId: number,
+    horLineWidth: number,
+    verLineHeight: number,
+    verLineLeft: number,
+    verLineTop: number
+}
+
 export function changePlayerPointsForMatch(tournament:Tournament, roundId:number, matchId:number, playerId:number, points:number):Tournament{
         if (tournament.roundsAndMatches != null) {
             // add points

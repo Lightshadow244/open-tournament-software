@@ -4,6 +4,8 @@
     import { fillNextRound, calculateRanks } from '$lib/calculateMatches';
 
     import OverviewSE from './04a_overview_SE.svelte';
+    import OverviewRR from './04b_overview_RR.svelte';
+    import OverviewDE from './04c_overview_DE.svelte';
 
     interface Props {
         tournament: Tournament;
@@ -58,7 +60,6 @@
             if (roundsAndMatchesHaveWinner) {
                 tournament.roundsAndMatches = fillNextRound(tournament);
                 tournament.round++;
-                console.log(tournament)
                 updateTournament(tournament);
             }else{
                 triggerToast("There are roundsAndMatches without a winner!", "error");
@@ -96,20 +97,16 @@
         <div class="overview-wrapper" style="left: {offsetX}px; top: {offsetY}px; transform:scale({scale});">
             {#if tournament.mode === "Single Elimination"}
                 <OverviewSE tournament={tournament} updateTournament={updateTournament} triggerToast={triggerToast}/>
+            {:else if tournament.mode === "Double Elimination"}
+                <OverviewDE tournament={tournament} updateTournament={updateTournament} triggerToast={triggerToast}/>
+            {:else if tournament.mode === "Round Robin"}
+                <OverviewRR tournament={tournament} updateTournament={updateTournament} triggerToast={triggerToast}/>
             {/if}
         </div>
     </div>
 </div>
 
 <style>
-    /* .overview-area{
-        position: relative;
-        width: 100%;
-        height: calc(100vh - 4rem);
-        overflow: hidden;
-        background-color: light-dark(var(--light), var(--dark-secondary));
-        border-radius: 0.3rem;
-    } */
     .overview-area{
         margin-top: 0.5rem;
         border-radius: 0.3rem;

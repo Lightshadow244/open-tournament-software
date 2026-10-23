@@ -13,6 +13,7 @@
 
     import SunnyIcon from '@iconify-svelte/material-symbols/sunny';
     import NightIcon from '@iconify-svelte/material-symbols/mode-night';
+    import Logo  from '$lib/assets/Logo.svelte';
 
     // let tmpTournaments = ;
 
@@ -61,7 +62,8 @@
                 {id: 3, name:"Player 4", icon: randomIcon(), iconColor: randomColor(), changeIcon: false}],
             roundsAndMatches     : [],
             round                : 0,
-            ranks               : []
+            ranks               : [],
+            overviewDE           :{"winningBracket": [], losingBracket: []}
         }
 
         tts[new_tt.id] = new_tt;
@@ -102,11 +104,14 @@
         navbar.style.setProperty("color-scheme", mode);
         
     }
+
+    function changeView(viewId:number){
+        view=viewId;
+    }
 </script>
 
 <nav bind:this={navbar} class="navbar">
-
-    <a class="nav-item nav-start home-link" href={resolve("/")}>Open Tournament Software</a>
+    <a class="nav-logo nav-start home-link" href={""} onclick={() => window.location.reload()}><Logo /></a>
     
     <div class="view-selection nav-item">
         <button class="{view == 0 ? "active":""}" onclick={() => {view=0}}>Tournaments</button>
@@ -137,7 +142,7 @@
         {#if view == 0}
             <SelectionView tournaments={$state.snapshot(tts)} createNewTournament={createNewTournament} selectTournament={selectTournament}/>
         {:else if view == 1}
-            <GeneralView tournament={$state.snapshot(tts[tournamentId])} triggerToast={triggerToast} deleteTournament={deleteTournament} updateTournament={updateTournament} />
+            <GeneralView tournament={$state.snapshot(tts[tournamentId])} triggerToast={triggerToast} deleteTournament={deleteTournament} updateTournament={updateTournament} changeView={changeView}/>
         {:else if view == 2}
             <MatchesView tournament={$state.snapshot(tts[tournamentId])} triggerToast={triggerToast} updateTournament={updateTournament}/>
         {:else if view == 3}
@@ -162,7 +167,7 @@
         align-items: center;
         color-scheme: dark;
         font-family: Open-Sans,sans-serif;
-        gap: 0.25rem;
+        gap: 1rem;
         transition: all 0.3s ease;
         z-index: 999;
         
@@ -180,6 +185,12 @@
     }
     .nav-item{
     } */
+    .nav-logo :global(svg){
+        height: 40px;
+        width: auto;
+        color: light-dark(var(--light-text), var(--dark-text));
+        transition: all 0.3s ease;
+    }
     .nav-start{
         margin-left: 3rem;
     }
@@ -192,8 +203,8 @@
 
     .view-selection{
         display: flex;
-        gap:0;
-        height:100%
+        gap:0.25rem;
+        height:100%;
     }
 
     .view-selection button{

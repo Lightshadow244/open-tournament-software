@@ -10,7 +10,13 @@ export type Tournament = {
     players: Array<Player>
     roundsAndMatches: Array<Array<Match>>
     round: number
-    ranks: Array<Player>
+    ranks: Array<Array<[Player, number]>>
+    overviewDE: OverviewDE
+}
+
+export type OverviewDE = {
+    winningBracket: Array<Array<Match>>
+    losingBracket: Array<Array<Match>>
 }
 
 export type Tournaments = {
@@ -41,6 +47,16 @@ export type Match = {
     final: boolean,
     semiFinal: boolean,
     littleFinal: boolean
+    winningBracket: boolean
+    losingBracket: boolean
+}
+
+export type FormattedMatch = {
+    matchId: number,
+    horLineWidth: number,
+    verLineHeight: number,
+    verLineLeft: number,
+    verLineTop: number
 }
 
 export function changePlayerPointsForMatch(tournament:Tournament, roundId:number, matchId:number, playerId:number, points:number):Tournament{
@@ -70,3 +86,12 @@ export function changePlayerPointsForMatch(tournament:Tournament, roundId:number
         // console.log(tournament)
         return(tournament)
     }
+
+export function calculateFillBlocks(id:number):number{
+    //returns f(x) = y = (f(x-1) * 2) + 1, x=0 y=0
+    let result = 0;
+    if (id != 0) {
+        result = (calculateFillBlocks(id-1) * 2) + 1;
+    }
+    return(result);
+}

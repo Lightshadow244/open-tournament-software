@@ -16,9 +16,10 @@
             deleteTournament(id: string): void;
             updateTournament(tt: Tournament, configuring?:boolean, initializing?:boolean, running?:boolean): void;
             triggerToast(msg:string, level:string): void;
+            changeView(viewId:number): void;
         }
 
-    let { tournament, deleteTournament, updateTournament, triggerToast }: Props = $props();
+    let { tournament, deleteTournament, updateTournament, triggerToast , changeView}: Props = $props();
 
     function addPlayerToTournament(){
         tournament.players?.push({id: tournament.players.length,name:"Player " + (tournament.players.length + 1), icon: randomIcon(), iconColor: randomColor(), changeIcon: false})
@@ -42,14 +43,28 @@
 
     function saveAndStartTournament(){
         if (tournament.mode === "Single Elimination") {
-            // if (tournament.players.length % 4 == 0) {
             if (Number.isInteger(getLog2(tournament.players.length)) && tournament.players.length != 2) {
                 tournament.roundsAndMatches = calculateMatches(tournament);
                 updateTournament(tournament, false, false, true); 
             }else{
                 triggerToast("Single Elimination needs player count: 4, 8, 16 ,32,...", "error")
             }
+        }else if(tournament.mode === "Round Robin"){
+            if (tournament.players.length > 2){
+                tournament.roundsAndMatches = calculateMatches(tournament);
+                updateTournament(tournament, false, false, true); 
+            }else{
+                triggerToast("Round Robin needs player count greater than 2", "error")
+            }
+        }else if (tournament.mode === "Double Elimination") {
+            if (Number.isInteger(getLog2(tournament.players.length)) && tournament.players.length >= 4) {
+                tournament.roundsAndMatches = calculateMatches(tournament);
+                updateTournament(tournament, false, false, true); 
+            }else{
+                triggerToast("Double Elimination needs player count: 8, 16 ,32,...", "error")
+            }
         }
+        changeView(2);
     }
 
     function activateIconSelector(player:Player){
@@ -107,15 +122,14 @@
         <label class="mode-element" for="doubleElimination">
             <!-- svelte-ignore binding_property_non_reactive -->
             <input type="radio" id="doubleElimination" name="mode" value="Double Elimination" bind:group={tournament.mode} disabled={tournament.status === "configuring" ? false : true}/>
-            <!-- <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Double Elimination</span> -->
-            <span class="mode-disabled">Double Elimination (not implemented)</span>
+            <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Double Elimination</span>
+            <!-- <span class="mode-disabled">Double Elimination (not implemented)</span> -->
         </label>
 
         <label class="mode-element" for="roundRobin">
             <!-- svelte-ignore binding_property_non_reactive -->
             <input type="radio" id="roundRobin" name="mode" value="Round Robin" bind:group={tournament.mode} disabled={tournament.status === "configuring" ? false : true}/>
-            <!-- <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Round Robin</span> -->
-            <span class="mode-disabled">Round Robin (not implemented)</span>
+            <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Round Robin</span>
         </label>
 
         <label class="mode-element" for="groupStageWithElimination">

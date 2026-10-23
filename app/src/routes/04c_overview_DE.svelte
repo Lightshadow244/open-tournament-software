@@ -278,8 +278,4 @@
     position: relative;
 }
 
-h3{
-    margin: 0 0 40px 0;
-}
-
 </style>

@@ -1,5 +1,4 @@
-import type { Tournament, Player, Match, OverviewDE} from '$lib/types/tournament';
-import {calculateFillBlocks} from '$lib/types/tournament';
+import type { Tournament, Player, Match} from '$lib/types/tournament';
 
 
 
@@ -33,6 +32,8 @@ export function calculateRanks(tournament: Tournament): Array<Array<[Player, num
     let  ranks: Array<Array<[Player, number]>> = [];
     if (tournament.mode === "Single Elimination") {
         ranks = calculateSERanks(tournament.roundsAndMatches, tournament.players);
+    }else if(tournament.mode === "Double Elimination"){
+        ranks = calculateDERanks(tournament.roundsAndMatches, tournament.players);
     }else if(tournament.mode === "Round Robin"){
         ranks = calculateRRRanks(tournament.roundsAndMatches, tournament.players);
     }
@@ -153,10 +154,10 @@ function calculateSERanks(roundsAndMatches: Array<Array<Match>>, players: Array<
     let ranks: Array<Array<[Player, number]>> = [[],[],[],[]];
     let final = roundsAndMatches[roundsAndMatches.length - 1];
 
-    ranks[0].push([<Player> final[0].winner, 0])
-    ranks[1].push([<Player> final[0].loser, 0])
-    ranks[2].push([<Player> final[1].winner, 0])
-    ranks[3].push([<Player> final[1].loser, 0])
+    ranks[0].push([final[0].winner as Player, 0])
+    ranks[1].push([final[0].loser as Player, 0])
+    ranks[2].push([final[1].winner as Player, 0])
+    ranks[3].push([final[1].loser as Player, 0])
 
     
 
@@ -337,6 +338,21 @@ function fillNextRoundDE(tournament:Tournament):Array<Array<Match>>{
     }
 
     return(tournament.roundsAndMatches)
+}
+
+function calculateDERanks(roundsAndMatches: Array<Array<Match>>, players: Array<Player>):Array<Array<[Player, number]>> {
+    // it could be more than one Player in one rank
+    let ranks = [[],[],[],[]] as Array<Array<[Player, number]>>;
+    let grandFinal = roundsAndMatches[roundsAndMatches.length - 1][0]
+    let lbFinal = roundsAndMatches[roundsAndMatches.length - 2][0]
+    let lbSemiFinal = roundsAndMatches[roundsAndMatches.length - 3][1]
+
+    ranks[0].push([grandFinal.winner as Player , 0])
+    ranks[1].push([grandFinal.loser as Player , 0])
+    ranks[2].push([lbFinal.loser as Player, 0])
+    ranks[3].push([lbSemiFinal.loser as Player, 0])
+
+    return(ranks);
 }
 
 // #endregion Double Elimination

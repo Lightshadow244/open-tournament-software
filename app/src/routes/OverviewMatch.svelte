@@ -30,13 +30,15 @@
             <h4>Final</h4>
         {:else if match.littleFinal}
             <h4>3rd-Place</h4>
+        {:else if match.semiFinal}
+            <h4>Semi-Final</h4>
         {:else}
             <h4>Match: {match.matchId + 1}</h4>
         {/if}
     </div>
     <div class="match-element match-player1-name with-icon">
         <div>
-            <PlayerIcon player={<Player>match.player1}/>
+            <PlayerIcon player={<Player>match.player1} onlyIcon={false}/>
         </div>
         <div class="{match.winnerId == 1?"crown":"crown-hidden"}">
             <CrownIcon height="1rem" color="currentcolor"/>
@@ -53,7 +55,7 @@
     </div>
     <div class="match-element match-player2-name with-icon">
         <div>
-            <PlayerIcon player={<Player>match.player2}/>
+            <PlayerIcon player={<Player>match.player2} onlyIcon={false}/>
         </div>
         <div class="{match.winnerId == 2?"crown":"crown-hidden"}">
             <CrownIcon height="1rem" color="currentcolor"/>

@@ -27,16 +27,20 @@
 
     interface Props {
         player: Player
+        onlyIcon: boolean
 	}
 
-    let { player }: Props = $props();
+    let { player, onlyIcon }: Props = $props();
 </script>
 
 {#if player}
     <span>
-        <span>
-            {player.name}
-        </span>
+        {#if onlyIcon == false}
+            <span>
+                {player.name}
+            </span>
+        
+        {/if}
         <span class="icon-wraper">
              {#if player.icon === "bishop"}
                 <ChessBishopIcon    height="1rem" color={player.iconColor}/> 

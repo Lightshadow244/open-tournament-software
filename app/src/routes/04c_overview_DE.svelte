@@ -67,7 +67,7 @@
                     } as FormattedMatch;
 
                     fm.horLineWidth = (2 * 40) + 23 + 250;
-                    fm.verLineHeight = ((calculateFillBlocks(wbRoundCounter - 1)) * 135) + 94;
+                    fm.verLineHeight = ((calculateFillBlocks(wbRoundCounter - 1)) * 135) + 197;
                     fm.verLineLeft = -66;
                     fm.verLineTop = 65
 
@@ -198,14 +198,15 @@
 <div>
     <div>
         <div>
-        <h3>
-            Winning Bracket
-        </h3>
-        </div>
+            <h3>
+                Winning Bracket
+            </h3>
+            </div>
 
         <div class="rounds-wrapper">
             {#each tournament.roundsAndMatches as round, roundId (roundId) }
                 <div class="matches-wrapper">
+                    <h3 class="round-title">Round {roundId + 1}</h3>
                     {#each overview.winningBracket[roundId] as matchInfo, i (i) }
                         {#if matchInfo.matchId == -1}
                             <div class="placeholder" ></div>
@@ -236,6 +237,12 @@
         <div class="rounds-wrapper">
             {#each tournament.roundsAndMatches as round, roundId (roundId) }
                 <div class="matches-wrapper">
+
+                    {#if roundId != tournament.roundsAndMatches.length - 1}
+                        <h3 class="round-title">Round {roundId + 1}</h3>
+                    {/if}
+                    
+
                     {#each overview.losingBracket[roundId] as matchInfo, i (i) }
                         {#if matchInfo.matchId == -1}
                             <div class="placeholder" ></div>

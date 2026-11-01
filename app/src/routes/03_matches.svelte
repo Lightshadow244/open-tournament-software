@@ -96,7 +96,7 @@
                                         <!-- <div class="player-name">
                                             {match.player1?.name}
                                         </div> -->
-                                        <PlayerIcon player={<Player>match.player1}/>
+                                        <PlayerIcon player={<Player>match.player1} onlyIcon={false}/>
                                     </div>
                                     
                                     <div class="player-counter">
@@ -122,7 +122,7 @@
                                         <!-- <div class="player-name">
                                             {match.player2?.name}
                                         </div> -->
-                                        <PlayerIcon player={<Player>match.player2}/>
+                                        <PlayerIcon player={<Player>match.player2} onlyIcon={false}/>
                                     </div>
                                     <div class="player-counter">
                                         <!-- svelte-ignore binding_property_non_reactive -->
@@ -152,7 +152,6 @@
                         </div>
                     {/if}
                 {/each}
-                <!-- {#if tournament.round == roundId && tournament.roundsAndMatches[tournament.roundsAndMatches.length - 1][0].nextMatchId != -1} -->
                 {#if tournament.round == roundId && tournament.round != tournament.roundsAndMatches.length - 1}
                     <div>
                         <button class="ots-button ots-button-success" onclick={() => nextRound()}>Next Round</button>

@@ -40,8 +40,6 @@ export type Match = {
     winnerId: number
     loser: Player | null
     roundId: number
-    nextRoundId: number
-    nextMatchId: number
     matchId: number
     name: string,
     final: boolean,

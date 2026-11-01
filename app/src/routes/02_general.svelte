@@ -178,10 +178,10 @@
                  <td class="icon-cell">
                     {#if tournament.status === "configuring"}
                         <button class="ots-button" onclick={() => activateIconSelector(p)}>
-                            <PlayerIcon player={p}/>
+                            <PlayerIcon player={p} onlyIcon={true}/>
                         </button>
                     {:else}
-                        <PlayerIcon player={p}/>
+                        <PlayerIcon player={p} onlyIcon={true}/>
                     {/if}
                     {#if p.changeIcon}
                         <IconSelector close={closeIconSelector} player={p} tournament={tournament} updateTournament={updateTournament}/>

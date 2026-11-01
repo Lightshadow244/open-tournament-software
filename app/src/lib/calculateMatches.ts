@@ -108,7 +108,6 @@ function calculateSEMatches(tournament:Tournament):Array<Array<Match>>{
             match.player2 = tournament.players[playerId]
             playerId++;
         })
-        console.log(roundsAndMatches);
     }
     return(roundsAndMatches)
 }

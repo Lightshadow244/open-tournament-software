@@ -1,6 +1,8 @@
 <script lang="ts">
-    import type { Tournament, Player} from '$lib/types/tournament';
+    import type { Tournament, Player, FormattedMatch} from '$lib/types/tournament';
     import {changePlayerPointsForMatch} from '$lib/types/tournament';
+    import {calculateFillBlocks} from '$lib/types/tournament';
+    import OverviewMatch from './OverviewMatch.svelte';
 
     import PlayerIcon from './PlayerIcon.svelte';
 
@@ -14,116 +16,136 @@
         }
     let { tournament, updateTournament, triggerToast }: Props = $props();
 
-
-    function calculateFillBlocks(id:number):number{
-        //returns f(x) = y = (f(x-1) * 2) + 1, x=0 y=0
-        let result = 0;
-        if (id != 0) {
-            result = (calculateFillBlocks(id-1) * 2) + 1;
-        }
-        return(result);
+    let overviewStructure = {
+        "winningBracket": [] as FormattedMatch[][] // [round] [formattedMatch]
     }
+
+    function buildOverview(){
+        let wb = overviewStructure.winningBracket;
+        // let wbRoundCounter = 0;
+        tournament.roundsAndMatches.forEach((round, roundId) => {
+            wb.push([]);
+            
+            // placeholder before matches
+            let preFillBlocks = calculateFillBlocks(roundId);
+            if (roundId + 1 == tournament.roundsAndMatches.length) {
+                preFillBlocks = preFillBlocks - 1;
+            }
+
+            // for (let index = 0; index < calculateFillBlocks(fillBlocksCounter); index++) {
+            for (let index = 0; index < preFillBlocks; index++) {
+                wb[roundId].push({matchId: -1} as FormattedMatch)
+            }
+
+            // matches
+            // first round and last round
+            if(roundId == 0 || roundId + 1 == tournament.roundsAndMatches.length){
+
+                if (roundId == 0) {
+                        round.forEach((match, matchId) => {
+                            let fm = {
+                                matchId: match.matchId,
+                                horLineWidth: 0,
+                                verLineHeight: 0,
+                                verLineLeft: 224,
+                                verLineTop: 135,
+                            } as FormattedMatch;
+                            if(match.matchId % 2 == 0){
+                                fm.verLineHeight = (calculateFillBlocks(roundId + 1)) * 135;
+                                 wb[roundId].push(fm)
+                            }else{
+                                wb[roundId].push(fm)
+                            }
+
+                            // placeholder between matches
+                            if (matchId + 1 != round.length) {
+                                for (let index = 0; index < calculateFillBlocks(roundId + 1); index++) {
+                                    wb[roundId].push({matchId: -1} as FormattedMatch)
+                                }
+                            }
+                        })
+                }else{
+                    let fm = {
+                        matchId: 0,
+                        horLineWidth: 64,
+                        verLineHeight: 0,
+                        verLineLeft: 224,
+                        verLineTop: 135,
+                    } as FormattedMatch;
+
+                    wb[roundId].push(fm)
+                }
+
+                
+                // wbRoundCounter++
+            }else{
+                round.forEach((match, matchId) => {
+                    let fm = {
+                        matchId: match.matchId,
+                        horLineWidth: 0,
+                        verLineHeight: 0,
+                        verLineLeft: 224,
+                        verLineTop: 135,
+                    } as FormattedMatch;
+                    
+                    if(match.matchId % 2 == 0){
+                        fm.verLineHeight = (calculateFillBlocks(roundId + 1)) * 135
+                    }
+                    fm.horLineWidth = 64
+                    
+                    wb[roundId].push(fm)
+
+                    // placeholder between matches
+                    for (let index = 0; index < calculateFillBlocks(roundId + 1); index++) {
+                        wb[roundId].push({matchId: -1} as FormattedMatch)
+                    }
+                })
+            }
+        })
+
+        // add 3rd-place match
+        wb[wb.length - 1].push({matchId: -1} as FormattedMatch)
+        let thirdPlaceMatch = {
+                        matchId: 1,
+                        horLineWidth: 64,
+                        verLineHeight: 0,
+                        verLineLeft: 224,
+                        verLineTop: 135,
+                    } as FormattedMatch;
+        wb[wb.length - 1].push(thirdPlaceMatch);
+    }
+
+    buildOverview();
+
 </script>
 
-<div class="rounds-wrapper">
-    {#each tournament.roundsAndMatches as round, roundId (roundId) }
-    <div class="matches-wrapper">
-
-        {#if round[0].final}
-            <h3 class="round-title">Final</h3>
-        {:else if round[0].semiFinal}
-            <h3 class="round-title">Semi-Final</h3>
-        {:else}
-            <h3 class="round-title">Round {roundId + 1}</h3>
-        {/if}
-        
-        <!-- add placeholder before matches -->
-        <!-- when only 2 rounds different behaviour for final match -->
-        {#if !tournament.roundsAndMatches[roundId][0].final || tournament.roundsAndMatches.length == 2}
-            {#each Array(calculateFillBlocks(roundId)) as e, i (i)}
-                <div class="match" ></div>
-            {/each}
-        {:else}
-            {#each Array(calculateFillBlocks(roundId) -1) as e, i (i)}
-                <div class="match" ></div>
-            {/each}
-        {/if}
-        
-        {#each round as match, matchId (matchId) }
-            <div 
-                // every even match and not last match > line down
-                // not first and not last match > line left
-                class="match {matchId % 2 == 0 && roundId != tournament.roundsAndMatches.length - 1?"before-line-down":""} {roundId > 0?"after-line-left":""}"
-                style="--height: {tournament.roundsAndMatches.length > 2?(calculateFillBlocks(roundId+1)) * 135:(calculateFillBlocks(roundId+1)) * 270}px;"
-                >
-                <div class="match-element match-title">
-                    {#if match.final}
-                        <h4>Final</h4>
-                    {:else if match.littleFinal}
-                        <h4>3rd-Place</h4>
-                    {:else}
-                        <h4>Match: {matchId + 1}</h4>
-                    {/if}
-                </div>
-                <div class="match-element match-player1-name with-icon">
-                    <div>
-                        <PlayerIcon player={<Player>match.player1}/>
-                    </div>
-                    <div class="{match.winnerId == 1?"crown":"crown-hidden"}">
-                        <CrownIcon height="1rem" color="currentcolor"/>
-                    </div>
-                </div>
-                <div class="match-element match-player1-points">
-                    <!-- svelte-ignore binding_property_non_reactive -->
-                    <input 
-                        type="{tournament.round == roundId && tournament.ranks.length == 0 ? "number" : "text"}" 
-                        bind:value={match.player1Points}
-                        onchange={(event) => {updateTournament(changePlayerPointsForMatch(tournament, roundId, matchId, 1 ,Number((event.currentTarget as HTMLInputElement).value)))}} 
-                        disabled={tournament.round == roundId && tournament.ranks.length == 0 ? false : true}
-                    >
-                </div>
-
-                <div class="match-element match-player2-name with-icon">
-                    <div>
-                        <PlayerIcon player={<Player>match.player2}/>
-                    </div>
-                    <div class="{match.winnerId == 2?"crown":"crown-hidden"}">
-                        <CrownIcon height="1rem" color="currentcolor"/>
-                    </div>
-                </div>
-                <div class="match-element match-player2-points">
-                    <!-- svelte-ignore binding_property_non_reactive -->
-                    <input 
-                        type="{tournament.round == roundId && tournament.ranks.length == 0 ? "number" : "text"}" 
-                        bind:value={match.player2Points}
-                        onchange={(event) => {updateTournament(changePlayerPointsForMatch(tournament, roundId, matchId, 2 ,Number((event.currentTarget as HTMLInputElement).value)))}} 
-                        disabled={tournament.round == roundId && tournament.ranks.length == 0 ? false : true}
-                    >
-                </div>
-            </div>
-            <!-- add placeholder between matches -->
-            <!-- when final add only one placeholder, but when only 2 rounds add zero placeholder for final -->
-            {#if !tournament.roundsAndMatches[roundId][0].final}
-                {#if tournament.roundsAndMatches.length > 2}
-                    {#each Array(calculateFillBlocks(roundId + 1)) as e, i (i)}
-                        <div class="match" ></div>
+<div>
+    <div>
+        <div class="rounds-wrapper">
+            {#each tournament.roundsAndMatches as round, roundId (roundId) }
+                <div class="matches-wrapper">
+                    <h3 class="round-title">Round {roundId + 1}</h3>
+                    {#each overviewStructure.winningBracket[roundId] as matchInfo, i (i) }
+                        {#if matchInfo.matchId == -1}
+                            <div class="placeholder" ></div>
+                        {:else}
+                            <OverviewMatch 
+                                tournament={tournament} 
+                                editable={tournament.round == roundId && tournament.ranks.length == 0 } 
+                                match={round[matchInfo.matchId]} 
+                                roundId={roundId} 
+                                updateTournament={updateTournament}
+                                horLineWidth={matchInfo.horLineWidth}
+                                verLineHeight={matchInfo.verLineHeight}
+                                verLineLeft={matchInfo.verLineLeft}
+                                verLineTop={matchInfo.verLineTop}
+                            />
+                        {/if}
                     {/each}
-                {:else}
-                    {#each Array(calculateFillBlocks(roundId + 1) * 2) as e, i (i)}
-                        <div class="match" ></div>
-                    {/each}
-                {/if}
-            {:else}
-                {#if tournament.roundsAndMatches.length > 2}
-                    <div class="match" ></div>
-                {/if}
-                
-            {/if}
-            
-        {/each}
+                </div>
+            {/each}
+        </div>
     </div>
-    
-    {/each}
 </div>
 
 
@@ -138,7 +160,7 @@
     flex-direction: column;
 }
 
-.match{
+.placeholder{
     display:grid;
     grid-template-columns: 200px 50px;
     grid-template-rows: 45px 45px 45px;
@@ -149,111 +171,4 @@
     position: relative;
 }
 
-.match-title{
-    grid-area: match-title;
-}
-
-.match-title h4 {
-    margin:0.5rem 0 0 0.5rem;
-}
-
-.match-player1-name{
-    grid-area: match-player1-name;
-}
-
-.match-player1-points{
-    grid-area: match-player1-points;
-}
-
-.match-player2-name{
-    grid-area: match-player2-name;
-}
-
-.match-player2-points{
-    grid-area: match-player2-points;
-}
-
-
-.match-element{
-    border-style: solid;
-    border-width: 2px 2px 2px 2px;
-    border-color: light-dark(var(--light-highlight), var(--dark-highlight));
-}
-
-.with-icon{
-    display:flex;
-    align-items: center;
-}
-
-.match-element div{
-    margin:10px;
-}
-
-.match-element input{
-    background-color: rgba(255,255,255,0.0);
-    width: calc(100% - 10px);
-    height: calc(100% - 20px);
-    border:0;
-    margin: 10px 10px 10px 5px;
-    padding:0;
-    text-align: center;
-}
-
-.match .match-element:nth-child(1){
-    border-top-left-radius: 0.3rem;
-    border-top-right-radius: 0.3rem;
-    border-width: 2px 2px 2px 2px;
-}
-
-.match .match-element:nth-child(2){
-    border-width: 0px 2px 2px 2px;
-}
-
-.match .match-element:nth-child(3){
-    border-width: 0px 2px 2px 0px;
-}
-
-.match .match-element:nth-child(4){
-    border-bottom-left-radius: 0.3rem;
-    border-width: 0px 2px 2px 2px;
-}
-
-.match .match-element:nth-child(5){
-    border-bottom-right-radius: 0.3rem;
-    border-width: 0px 2px 2px 0px;
-}
-
-.before-line-down::before{
-    content: "";
-    position: absolute;
-    top: 135px;
-    left: 224px;
-    height: var(--height);
-    border-width: 0 0 0 3px;
-    border-style: solid;
-    border-color: light-dark(var(--light-highlight), var(--dark-highlight));
-}
-
-.after-line-left::after{
-    content: "";
-    position: absolute;
-    top: 65px;
-    left: -64px;
-    width: 64px;
-    border-width: 0 0 3px 0;
-    border-style: solid;
-    border-color: light-dark(var(--light-highlight), var(--dark-highlight));
-}
-
-.crown{
-    display: block;
-}
-
-.crown-hidden{
-    display: none;
-}
-
-h3{
-    margin: 0 0 40px 0;
-}
 </style>

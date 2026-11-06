@@ -18,9 +18,9 @@
             {#each tournament.ranks[0] as rank1 }
                 <div class="first-rank-name">
                     {#if tournament.mode === "Round Robin"}
-                        <PlayerIcon player={<Player>rank1[0]}/>: {rank1[1]} wins
+                        <PlayerIcon player={<Player>rank1[0]} onlyIcon={false}/>: {rank1[1]} wins
                     {:else}
-                        <PlayerIcon player={<Player>rank1[0]}/>
+                        <PlayerIcon player={<Player>rank1[0]} onlyIcon={false}/>
                     {/if}
                     
                 </div> 
@@ -36,9 +36,9 @@
                  {#each tournament.ranks[1] as rank2 }
                     <div>
                         {#if tournament.mode === "Round Robin"}
-                            <PlayerIcon player={<Player>rank2[0]}/>: {rank2[1]} wins
+                            <PlayerIcon player={<Player>rank2[0]} onlyIcon={false}/>: {rank2[1]} wins
                         {:else}
-                            <PlayerIcon player={<Player>rank2[0]}/>
+                            <PlayerIcon player={<Player>rank2[0]} onlyIcon={false}/>
                         {/if}   
                     </div>
                 {/each}
@@ -49,9 +49,9 @@
                 {#each tournament.ranks[2] as rank3 }
                     <div>
                         {#if tournament.mode === "Round Robin"}
-                            <PlayerIcon player={<Player>rank3[0]}/>: {rank3[1]} wins
+                            <PlayerIcon player={<Player>rank3[0]} onlyIcon={false}/>: {rank3[1]} wins
                         {:else}
-                            <PlayerIcon player={<Player>rank3[0]}/>
+                            <PlayerIcon player={<Player>rank3[0]} onlyIcon={false}/>
                         {/if}  
                     </div>
                 {/each}
@@ -62,9 +62,9 @@
                 {#each tournament.ranks[3] as rank4 }
                     <div>
                         {#if tournament.mode === "Round Robin"}
-                            <PlayerIcon player={<Player>rank4[0]}/>: {rank4[1]} wins
+                            <PlayerIcon player={<Player>rank4[0]} onlyIcon={false}/>: {rank4[1]} wins
                         {:else}
-                            <PlayerIcon player={<Player>rank4[0]}/>
+                            <PlayerIcon player={<Player>rank4[0]} onlyIcon={false}/>
                         {/if}  
                     </div>
                 {/each}

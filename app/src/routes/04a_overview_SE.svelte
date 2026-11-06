@@ -113,8 +113,6 @@
                         verLineTop: 135,
                     } as FormattedMatch;
         wb[wb.length - 1].push(thirdPlaceMatch);
-
-        console.log(overviewStructure)
     }
 
     buildOverview();

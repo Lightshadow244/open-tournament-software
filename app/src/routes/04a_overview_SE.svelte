@@ -32,7 +32,6 @@
                 preFillBlocks = preFillBlocks - 1;
             }
 
-            // for (let index = 0; index < calculateFillBlocks(fillBlocksCounter); index++) {
             for (let index = 0; index < preFillBlocks; index++) {
                 wb[roundId].push({matchId: -1} as FormattedMatch)
             }
@@ -51,7 +50,11 @@
                                 verLineTop: 135,
                             } as FormattedMatch;
                             if(match.matchId % 2 == 0){
-                                fm.verLineHeight = (calculateFillBlocks(roundId + 1)) * 135;
+                                if (tournament.players.length == 4) {
+                                    fm.verLineHeight = (calculateFillBlocks(roundId + 2)) * 135;
+                                }else{
+                                    fm.verLineHeight = (calculateFillBlocks(roundId + 1)) * 135;
+                                }
                                  wb[roundId].push(fm)
                             }else{
                                 wb[roundId].push(fm)
@@ -59,12 +62,22 @@
 
                             // placeholder between matches
                             if (matchId + 1 != round.length) {
-                                for (let index = 0; index < calculateFillBlocks(roundId + 1); index++) {
+                                let afterFillBlocks = calculateFillBlocks(roundId + 1)
+                                if (tournament.players.length == 4) {
+                                    afterFillBlocks = calculateFillBlocks(roundId + 2)
+                                }
+                                console.log(afterFillBlocks)
+                                for (let index = 0; index < afterFillBlocks; index++) {
                                     wb[roundId].push({matchId: -1} as FormattedMatch)
                                 }
                             }
                         })
                 }else{
+
+                    if (tournament.players.length == 4) {
+                        wb[roundId].push({matchId: -1} as FormattedMatch)
+                    }
+                    
                     let fm = {
                         matchId: 0,
                         horLineWidth: 64,

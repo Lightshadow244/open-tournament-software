@@ -12,6 +12,8 @@ export function calculateMatches(tournament:Tournament):Array<Array<Match>>{
         tournament.roundsAndMatches = calculateDEMatches(tournament);
     }else if(tournament.mode === "Round Robin"){
         tournament.roundsAndMatches = calculateRRMatches(tournament);
+    }else if(tournament.mode === "Group Stage + Elimination"){
+        tournament.roundsAndMatches = calculateGSEMatches(tournament);
     }
     return(tournament.roundsAndMatches);
 }
@@ -476,6 +478,76 @@ function calculateRRRanks(roundsAndMatches: Array<Array<Match>>, players: Array<
 }
 
 // #endregion Round Robin
+
+function calculateGSEMatches(tournament:Tournament):Array<Array<Match>>{
+    let roundsAndMatches:Array<Array<Match>> = [];
+
+    // GROUP Stage structure with player distribution
+    // create groups of 4 Players
+    let groupsCount = tournament.players.length / 4;
+    let groups = {
+        players: [] as Player[][],
+        // combinations: [] as number[][]
+    };
+
+    for (let index = 0; index < groupsCount; index++) {
+        groups.players.push([]);
+        groups.players[index].push(tournament.players[0 + (index * 4)]);
+        groups.players[index].push(tournament.players[1 + (index * 4)]);
+        groups.players[index].push(tournament.players[2 + (index * 4)]);
+        groups.players[index].push(tournament.players[3 + (index * 4)]);
+        
+    }
+
+    const maxRounds = groups.players[0].length - 1;
+    const maxMatches = groups.players[0].length / 2;
+
+    for (let index = 0; index < maxRounds; index++) {
+        roundsAndMatches.push([])
+    }
+
+    const combinations = [
+        [[0,1], [2,3]], 
+        [[0,2], [1,3]],
+        [[0,3], [1,2]]
+    ]
+
+    for (let indexGroup = 0; indexGroup < groups.players.length; indexGroup++) {
+        const group = groups.players[indexGroup];
+        
+    
+        for (let indexRound = 0; indexRound < combinations.length; indexRound++) {
+            console.log("###")
+            const roundCombination = combinations[indexRound];
+            for (let indexMatch = 0; indexMatch < roundCombination.length; indexMatch++) {
+                const indexPlayers = roundCombination[indexMatch];
+                const newMatch = {
+                    player1: group[indexPlayers[0]],
+                    player1Points: 0,
+                    player2: group[indexPlayers[1]],
+                    player2Points: 0,
+                    winner: null,
+                    winnerId: 0,
+                    loser: null,
+                    roundId: indexRound,
+                    matchId: roundsAndMatches[indexRound].length,
+                    name: "",
+                    final: false,
+                    semiFinal: false,
+                    littleFinal: false,
+                    group: indexGroup
+                } as Match;
+                roundsAndMatches[indexRound].push(newMatch);
+            }
+            
+        }
+    }
+
+    // single Elimination stage without player distribution
+    console.log("roundsAndMatches", roundsAndMatches)
+
+    return(roundsAndMatches);
+}
 
 export function getLog2(x:number) {
   return Math.log(x) / Math.log(2);

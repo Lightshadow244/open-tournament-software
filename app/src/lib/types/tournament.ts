@@ -47,6 +47,7 @@ export type Match = {
     littleFinal: boolean
     winningBracket: boolean
     losingBracket: boolean
+    group: number
 }
 
 export type FormattedMatch = {

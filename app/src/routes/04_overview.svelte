@@ -6,6 +6,7 @@
     import OverviewSE from './04a_overview_SE.svelte';
     import OverviewRR from './04b_overview_RR.svelte';
     import OverviewDE from './04c_overview_DE.svelte';
+    // import OverviewGSE from './04d_overvied_GSE.svelte'
 
     interface Props {
         tournament: Tournament;
@@ -102,6 +103,9 @@
             {:else if tournament.mode === "Round Robin"}
                 <OverviewRR tournament={tournament} updateTournament={updateTournament} triggerToast={triggerToast}/>
             {/if}
+            <!-- {:else if tournament.mode === "Group Stage + Elimination"}
+                <OverviewGSE tournament={tournament} updateTournament={updateTournament} triggerToast={triggerToast}/>
+            {/if} -->
         </div>
     </div>
 </div>

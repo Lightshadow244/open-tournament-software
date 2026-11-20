@@ -13,6 +13,9 @@ export function calculateMatches(tournament:Tournament):Array<Array<Match>>{
     }else if(tournament.mode === "Round Robin"){
         tournament.roundsAndMatches = calculateRRMatches(tournament);
     }
+    // }else if(tournament.mode === "Group Stage + Elimination"){
+    //     tournament.roundsAndMatches = calculateGSEMatches(tournament);
+    // }
     return(tournament.roundsAndMatches);
 }
 
@@ -24,6 +27,9 @@ export function fillNextRound(tournament: Tournament):Array<Array<Match>>{
     }else if(tournament.mode === "Round Robin"){
         // nothing to do
     }
+    // }else if(tournament.mode === "Group Stage + Elimination"){
+    //     tournament.roundsAndMatches = fillNextRoundGSE(tournament);
+    // }
     return(tournament.roundsAndMatches);
 }
 
@@ -476,6 +482,163 @@ function calculateRRRanks(roundsAndMatches: Array<Array<Match>>, players: Array<
 }
 
 // #endregion Round Robin
+
+// function calculateGSEMatches(tournament:Tournament):Array<Array<Match>>{
+//     let roundsAndMatches:Array<Array<Match>> = [];
+
+//     // GROUP Stage structure with player distribution
+//     // create groups of 4 Players
+//     let groupsCount = tournament.players.length / 4;
+//     let groups = {
+//         players: [] as Player[][],
+//         // combinations: [] as number[][]
+//     };
+
+//     for (let index = 0; index < groupsCount; index++) {
+//         groups.players.push([]);
+//         groups.players[index].push(tournament.players[0 + (index * 4)]);
+//         groups.players[index].push(tournament.players[1 + (index * 4)]);
+//         groups.players[index].push(tournament.players[2 + (index * 4)]);
+//         groups.players[index].push(tournament.players[3 + (index * 4)]);
+        
+//     }
+
+//     const maxRoundsGroupPhase = groups.players[0].length - 1;
+//     console.log(maxRoundsGroupPhase);
+//     const maxMatches = groups.players[0].length / 2;
+
+//     for (let index = 0; index < maxRoundsGroupPhase; index++) {
+//         roundsAndMatches.push([])
+//     }
+
+//     const combinations = [
+//         [[0,1], [2,3]], 
+//         [[0,2], [1,3]],
+//         [[0,3], [1,2]]
+//     ]
+//     // for every group of 4 players
+//     for (let indexGroup = 0; indexGroup < groups.players.length; indexGroup++) {
+//         const group = groups.players[indexGroup];
+        
+    
+//         for (let indexRound = 0; indexRound < combinations.length; indexRound++) {
+//             const roundCombination = combinations[indexRound];
+//             for (let indexMatch = 0; indexMatch < roundCombination.length; indexMatch++) {
+//                 const indexPlayers = roundCombination[indexMatch];
+//                 const newMatch = {
+//                     player1: group[indexPlayers[0]],
+//                     player1Points: 0,
+//                     player2: group[indexPlayers[1]],
+//                     player2Points: 0,
+//                     winner: null,
+//                     winnerId: 0,
+//                     loser: null,
+//                     roundId: indexRound,
+//                     matchId: roundsAndMatches[indexRound].length,
+//                     name: "",
+//                     final: false,
+//                     semiFinal: false,
+//                     littleFinal: false,
+//                     group: indexGroup
+//                 } as Match;
+//                 roundsAndMatches[indexRound].push(newMatch);
+//             }
+            
+//         }
+//     }
+
+//     // single Elimination stage without player distribution
+//     // after group phase so only half of player count
+//     const maxRoundsElimination = getLog2(tournament.players.length / 2);
+//     console.log(maxRoundsElimination);
+//     for (let roundId = 0; roundId < maxRoundsElimination; roundId++) {
+//         roundsAndMatches.push([])
+//         const maxMatchesCount = tournament.players.length / 2 / (2 ** (roundId + 1))
+//         for (let matchId = 0; matchId < maxMatchesCount; matchId++) {
+//             const newMatch = {
+//                 player1: null,
+//                 player1Points: 0,
+//                 player2: null,
+//                 player2Points: 0,
+//                 winner: null,
+//                 winnerId: 0,
+//                 loser: null,
+//                 roundId: roundId,
+//                 matchId: matchId,
+//                 name: "",
+//                 final: false,
+//                 semiFinal: false,
+//                 littleFinal: false,
+//                 group: -1
+//                 } as Match;
+//                 roundsAndMatches[roundsAndMatches.length - 1].push(newMatch);
+//         }
+//     }
+
+//     console.log("roundsAndMatches", roundsAndMatches)
+
+//     return(roundsAndMatches);
+// }
+
+// function fillNextRoundGSE(tournament:Tournament):Array<Array<Match>>{
+//     // if elimination phase
+//     if (tournament.roundsAndMatches[tournament.round + 1][0].group == -1) {
+//         // if last round group stage phase
+//         if (tournament.roundsAndMatches[tournament.round][0].group == 0) {
+//             // let ranks: { [key: number]: number } = {};
+//             type ranks = { [key: number]: number };
+//             type sortedRanks = { [key: string]: number };
+//             let ranksPerGroup: ranks[] = [];
+//             let sortedRanksPerGroup: Array<Array<[string,number]>> = []; //Groups, Player, [playerid, points]
+//             tournament.roundsAndMatches.forEach(round => {
+//                 if (round[0].group >= 0) {
+//                     round.forEach(match => {
+//                         if (match.group > ranksPerGroup.length - 1) {
+//                             ranksPerGroup.push({});
+//                         }
+
+//                         if (ranksPerGroup[match.group][match.winner?.id as number]) {
+//                             ranksPerGroup[match.group][match.winner?.id as number] += 1;
+//                         }else{
+//                             ranksPerGroup[match.group][match.winner?.id as number] = 1;
+//                         }
+
+//                     }) 
+//                 }
+               
+//             })
+
+//             ranksPerGroup.forEach(group => {
+//                 sortedRanksPerGroup.push(Object.entries(group).sort((a, b) => b[1] - a[1]));
+//             })
+
+//             console.log(sortedRanksPerGroup);
+//         }else{
+//             let nextMatchId = 0;
+//             tournament.roundsAndMatches[tournament.round].forEach(matchOldRound => {
+//                 if (tournament.roundsAndMatches[tournament.round + 1][nextMatchId].player1 == null) {
+                    
+//                     tournament.roundsAndMatches[tournament.round + 1][nextMatchId].player1 = matchOldRound.winner;
+//                 }else{
+//                     tournament.roundsAndMatches[tournament.round + 1][nextMatchId].player2 = matchOldRound.winner;
+//                     nextMatchId++;
+//                 }
+                
+//             })
+//         }
+        
+//     }
+    
+
+//     // check if next round is last round than add losers to little final
+//     // if (tournament.round + 1 == tournament.roundsAndMatches.length - 1) {
+//     //     tournament.roundsAndMatches[tournament.roundsAndMatches.length-1][1].player1 = tournament.roundsAndMatches[tournament.roundsAndMatches.length-2][0].loser;
+
+//     //     tournament.roundsAndMatches[tournament.roundsAndMatches.length-1][1].player2 = tournament.roundsAndMatches[tournament.roundsAndMatches.length-2][1].loser;
+//     // }
+
+//     return(tournament.roundsAndMatches)
+// }
 
 export function getLog2(x:number) {
   return Math.log(x) / Math.log(2);

@@ -142,19 +142,19 @@
             <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Round Robin</span>
         </label>
 
-        <label class="mode-element" for="groupStageWithElimination">
+        <!-- <label class="mode-element" for="groupStageWithElimination"> -->
             <!-- svelte-ignore binding_property_non_reactive -->
-            <input type="radio" id="groupStageWithElimination" name="mode" value="Group Stage + Elimination" bind:group={tournament.mode} disabled={tournament.status === "configuring" ? false : true}/>
-            <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Group Stage + Elimination</span>
+            <!--<input type="radio" id="groupStageWithElimination" name="mode" value="Group Stage + Elimination" bind:group={tournament.mode} disabled={tournament.status === "configuring" ? false : true}/>
+            <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Group Stage + Elimination</span>-->
             <!-- <span class="mode-disabled">Group Stage + Elimination (not implemented)</span> -->
-        </label>
+        <!--</label>-->
 
-        <label class="mode-element" for="swissSystem">
+        <!--<label class="mode-element" for="swissSystem"> -->
             <!-- svelte-ignore binding_property_non_reactive -->
-            <input type="radio" id="swissSystem" name="mode" value="Swiss System" bind:group={tournament.mode} disabled={tournament.status === "configuring" ? false : true}/>
+             <!--<input type="radio" id="swissSystem" name="mode" value="Swiss System" bind:group={tournament.mode} disabled={tournament.status === "configuring" ? false : true}/>-->
             <!-- <span class="{tournament.status === "configuring" ? "" : "mode-disabled"}">Swiss System</span> -->
-            <span class="mode-disabled">Swiss System (not implemented)</span>
-        </label>
+             <!--<span class="mode-disabled">Swiss System (not implemented)</span>-->
+         <!--</label> -->
     </div>
 
     <div class="divider"></div>

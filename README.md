@@ -9,15 +9,15 @@
 ## Features
 - Create multiple tournaments:
   - Single elimination
-  - Double elemination (planned)
-  - Round robin (planned)
-  - Group stage + elimination (planned)
-  - Swiss system (planned)
+  - Double elemination
+  - Round robin
+  - ~~Group stage + elimination~~
+  - ~~Swiss system~~ 
 - Add participants:
   - Add name 
   - Choose icon 
   - Choose icon color
-  - Choose strength (planned)
+  - ~~Choose strength~~
 
 ## Demo
 Open-tournament-software is avaiable at github-pages.

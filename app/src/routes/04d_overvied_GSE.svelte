@@ -12,5 +12,5 @@
         }
     let { tournament, updateTournament, triggerToast }: Props = $props();
 
-    console.log("GSE")
+    console.log("NOT IMPLEMENTED")
 </script>
